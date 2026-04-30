@@ -1,0 +1,623 @@
+###
+POST http://localhost:4000/seed-admin
+Content-Type: application/json
+
+{
+    "name": "Order Admin",
+    "email": "order@torajacoffee.com",
+    "password": "order123",
+    "role": "ORDER_ADMIN"
+}
+
+###
+POST https://staging-api.muliaprivileges.com/login
+Content-Type: application/json
+
+{
+    "username": "iwan_lembong",
+    "password": "123456"
+}
+
+
+###
+POST https://api.muliaprivileges.com/login
+Content-Type: application/json
+
+{
+    "username": "iwan_lembong",
+    "password": "qwerty123!@#"
+}
+
+
+
+### Membership Points
+GET http://localhost:3009/members/points?page=1&per_page=10&filter=&memberTypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+
+### Opening Balance
+GET http://localhost:3009/members/summaryopeningbalance
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Previous Points
+GET http://localhost:3009/members/summaryprevious?currentDate=2024-07-03&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Inital Points
+GET http://localhost:3009/members/summaryinitial?currentDate=2024-10-29&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Enrolls Points
+GET http://localhost:3009/members/summaryenrolls?currentDate=2024-07-03&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+
+### Seconds Points
+GET http://localhost:3009/members/summarysecond?currentDate=2024-07-03&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Purchase Points
+GET http://localhost:3009/members/summarypurchase?currentDate=2024-07-03&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Bonus/Upgrade Points
+GET http://localhost:3009/members/summarybonus?currentDate=2024-07-24&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Dining Points
+GET http://localhost:3009/members/summarydining?currentDate=2024-07-26&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Redeems Points
+GET http://localhost:3009/members/summaryredeem?currentDate=2024-07-26&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Adjustments Points
+GET http://localhost:3009/members/summaryadjustment?currentDate=2025-01-27&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Expired Points
+GET http://localhost:3009/members/summaryexpired?currentDate=2025-01-31&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+### Reset Points
+GET http://localhost:3009/members/summaryreset?currentDate=2025-02-05&membertypeId=1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzY1MjQ3NTI1LCJleHAiOjE3NjUyNDc1NDV9.R1Xi9AhDLetGrehTUF_UT9_V2iOn54JaP-_o5oWrpnw
+
+
+
+###
+GET http://localhost:3009/members/check-enroll?memberId=50190949&confNo=3881546
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzU4NjcxOTkzLCJleHAiOjE3NTg2NzIwMTN9.Dsi_59O42VFVidBpn-9lHPPIJIAYEsgI8z6QAX-iCTc
+
+
+//  check enroll
+    app.get('/members/check-enroll', verifyToken, MemberController.getCheckEnroll);
+
+####
+GET http://staging-api.muliaprivileges.com/members/reedem-points/50249783
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzU3OTg3NTIxLCJleHAiOjE3NTc5ODc1NDF9.ND-V6hSZZvpSDWJ0yRV4itXpR9vLTLW-0EEydTs7du4
+
+
+###
+GET http://localhost:3009/token
+
+
+###
+DELETE http://localhost:3009/logout
+
+
+###
+GET http://localhost:3009/reedems
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/page
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "point":2000,
+    "image_name":"aeiuuee.jpg",
+    "image_url":"/public"
+}
+
+###
+POST http://localhost:3009/reedems
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "reedem_name":"jhon",
+    "point":2000,
+    "image_name":"aeiuuee.jpg",
+    "image_url":"/public",
+    "location":"bali",
+    "short_desc":"Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+}
+
+
+###
+GET http://localhost:3009/reedems/16
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+###
+PUT http://localhost:3009/reedems/16
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "point":1500,
+    "reedem_name":"jhon",
+    "image_name":"jhon.png",
+    "image_url":"/public/edit",
+    "location": "Bali",
+    "description" : "edit Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+}
+
+###
+DELETE http://localhost:3009/reedems/16
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+POST http://localhost:3009/reedemslang/3/1
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "title" : "jhon",
+    "description": "tess lorem ipsum language 4"
+}
+
+####
+GET https://api.muliaprivileges.com/members/reedem-points/99868
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+
+###
+PUT http://localhost:3009/reedemslang/3/1
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "title" : "jhon edit",
+    "description": "tess ipsum language 1 edit 1234"
+}
+
+###
+GET http://localhost:3009/reedemslang/1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/reedemslang/byid/10
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+DELETE http://localhost:3009/reedemslang/2/1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+DELETE http://localhost:3009/reedemslang/delete/10
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/reedemslang/detail/3/1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+POST http://localhost:3009/exclusiveoffers
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "destination": "Bali",
+    "hotel": "The Mulia resort",
+    "image_name": "adasdasd.png",
+    "image_url": "public/asdada.png",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    "url_page" : "http://muliabali.com"
+}
+
+
+###
+GET http://localhost:3009/exclusiveoffers
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/exclusiveoffers/10
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+PUT http://localhost:3009/exclusiveoffers/2
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "destination": "Jakarta",
+    "hotel": "HOTEL MULIA SENAYAN",
+    "image_name": "adasdasd.png",
+    "image_url": "public/asdada.png",
+    "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+    "url_page" : "http://muliabali.com"
+}
+
+
+###
+DELETE http://localhost:3009/exclusiveoffers/4
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/offerlang/1
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+POST http://localhost:3009/offerlang/1/1
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "title":"jhonsa",
+    "description": "title des"
+}
+
+
+###
+PUT http://localhost:3009/offerlang/3/1
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+{
+    "title":"tes edit",
+    "description": "edit 1 test"
+}
+
+
+###
+GET http://localhost:3009/offerlang/detail/3/2
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+GET http://localhost:3009/missingpointemail
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+###
+POST http://localhost:3009/missingpointemail
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "confirmation_no": "666sssww",
+    "guest_name": "jhonn doe",
+    "property": "the mulia",
+    "checkin": "2023-05-05T01:44:34.000Z",
+    "checkout": "2023-05-05T01:44:34.000Z",
+    "file": "stasjhakd.jpg",
+    "comment": "lorem ipsum dolor asadjsjadhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+}
+
+###
+DELETE http://localhost:3009/missingpointemail/3
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+
+###
+PUT http://localhost:3009/missingpointemail/4
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+{
+    "confirmation_no": "eww16sttqw",
+    "guest_name": "dr wayan",
+    "property": "the mulia",
+    "checkin": "2023-05-05T01:44:34.000Z",
+    "checkout": "2023-05-05T01:44:34.000Z",
+    "file": "stasjhakd.jpg",
+    "comment": "lorem ipsum dolor asadjsjadhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"
+}
+
+###
+GET https://localhost:3009/missingpointemail/5
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzU3OTI2MzI4LCJleHAiOjE3NTc5MjYzNDh9.8JJ6NgvEFHeWLaycDWanx0-1ATdwh1PPlmwFZNh0j7o
+
+###
+GET http://localhost:3009/members
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+### TEST Verifikasi Valid Email
+POST http://localhost:3009/send-email
+Content-Type: application/json
+
+{
+  "to": "iwan_lembong@yahoo.com",
+  "subject": "Halo dari Express + SendGrid",
+  "html": "<h1>Test email validasi</h1>"
+}
+
+### TEST BOUNCE EMAIL
+### Create Bounce Email
+POST http://localhost:3009/webhook/bounce
+Content-Type: application/json
+
+{
+  "event": "bounce",
+  "email": "bounced@example.com",
+  "reason": "Mailbox not found",
+  "status": "hard-bounce"
+}
+
+### Get Bounce Emails
+GET http://localhost:3009/api/bounce-emails
+
+### Get Blacklisted Emails
+GET http://localhost:3009/api/blacklisted-emails
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+### Get Un-Blacklisted Emails
+GET http://localhost:3009/api/reset-history
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+### Get statistics
+GET http://localhost:3009/api/statistics
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJmaXJzdF9uYW1lIjoibm92aWUiLCJsYXN0X25hbWUiOiJhbmdyZW5pIiwidXNlcm5hbWUiOiJhZG0iLCJpYXQiOjE2ODA1MDU5MzcsImV4cCI6MTY4MDUwNTk1N30.fqYeSM-2SziGT9kKJoWPRasiY8FUNKGT70_CB7m0t-8
+
+
+### Send Email
+POST http://localhost:3009/send-email
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "subject": "Testing send email",
+  "message ": "Just testing the message."
+}
+
+### get inital point
+GET http://localhost:3009/profile/myinitpoints/HMS00093252
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+### Regenerate Voucher
+POST https://api.muliaprivileges.com/recreate-voucher
+Content-Type: application/json
+
+{
+    "id": 1320,
+    "member_id": "50191096",
+    "reedem_id": 20,
+    "reedem_name": "Dining Voucher IDR 1,000,000 net",
+    "redem_type_id": 2,
+    "redem_type": "Food & Beverages",
+    "location": "BALI",
+    "full_name": "JAHANGIR KHAN DAHA",
+    "email": "jay@dahainvestments.com",
+    "redemption_date": "2025-10-04",
+    "reedem_required_points": 7900,
+    "reedem_qty_points": 1,
+    "total_reedem_points": 7900,
+    "beneficiary": "JAHANGIR KHAN DAHA",
+    "comments": "",
+    "previous_balance": 51552,
+    "remaining_points": 2052,
+    "surcharge_type_id": 0,
+    "surcharge_type_name": null,
+    "surcharge_points": 0,
+    "total_climed_points": 7900,
+    "voucher_no": "MBFB-005106862025MP",
+    "date_expired": "2026-04-03",
+    "qrcode_url": "qrcode_MBFB-005106862025MP.png",
+    "is_cancel": 0,
+    "is_used": 0,
+    "is_loyalty": 1,
+    "is_revenue": 1,
+    "is_financial": 1,
+    "is_resident": 1,
+    "is_manual": 0,
+    "approve_status_id": 4,
+    "username": "jay@dahainvestments.com"
+}
+
+
+### get page content by slug
+GET http://localhost:3009/pages/content-slug/membershiptiers
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+### get summary initial points
+GET http://localhost:3009/members/summaryinitialpoints
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+### test email
+POST https://staging-api.muliaprivileges.com/test-email
+Content-Type: application/json
+
+{
+  "email": "iwanlembong@sample.com"
+}
+
+### Email status
+GET https://staging-api.muliaprivileges.com/email-status
+Content-Type: application/json
+
+###
+GET http://localhost:3009/email-status
+Content-Type: application/json
+
+###
+GET http://localhost:3009/members-activity-summary?page=3&per_page=25&memberTypeId=1
+Content-Type: application/json
+ 
+###
+GET http://localhost:3009/members-activity-summary/50275364
+Content-Type: application/json
+
+###
+GET https://api.muliaprivileges.com/members-activity-summary/50275364
+Content-Type: application/json
+
+###
+GET https://api.muliaprivileges.com/memberlogs/points/WB00120479
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+
+/reedempoints/totalpoints/${memberId}
+
+###
+GET http://localhost:3009/reedempoints/totalpoints/76389
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+
+###
+GET http://localhost:3009/members/visitinterval
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+
+###
+GET http://localhost:3009/members/returningguestinterval
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+###
+GET https://api.muliaprivileges.com/members/summarytotalstay
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+
+###
+GET https://api.muliaprivileges.com/members/detailtotalstay/100277
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+
+###
+GET https://api.muliaprivileges.com/members/264
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+###
+GET http://localhost:3009/memberlogs/points/WB00143426
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzQ4OTk3NjEzLCJleHAiOjE3NDg5OTc2MzN9.jMOEYdZm11VQnsEUrJrsZWDxln_Ngn6CowfEE-XH2AE
+
+###
+GET http://localhost:3009/members/double-dipping
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzcyMTcyNjgyLCJleHAiOjE3NzIxNzI3MDJ9.YjkR7dMzikTQPCRDCzmxw_RHUSsvDRkQEtEdJbU2C70
+
+{
+    "dateFrom":"01/01/2025",
+    "dateTo":"30/01/2025"
+}
+
+
+###
+GET http://localhost:3009/masters/autopoint-wcc-member?page=1&per_page=10&filter=&location=BALI
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzcyMTcyNjgyLCJleHAiOjE3NzIxNzI3MDJ9.YjkR7dMzikTQPCRDCzmxw_RHUSsvDRkQEtEdJbU2C70
+
+
+###
+GET http://localhost:3009/members/check-email/dallove@naver.com
+Content-Type: application/json
+Authorization: Bearer 
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImZpcnN0X25hbWUiOiJJd2FuIiwibGFzdF9uYW1lIjoiTGVtYm9uZyIsInVzZXJuYW1lIjoiaXdhbl9sZW1ib25nIiwiaWF0IjoxNzcyMTcyNjgyLCJleHAiOjE3NzIxNzI3MDJ9.YjkR7dMzikTQPCRDCzmxw_RHUSsvDRkQEtEdJbU2C70
+
+
+###
+POST https://api.muliaprivileges.com/members/login
+Content-Type: application/json
+
+{
+    "email": "iwan_lembong@yahoo.com",
+    "password": "123456"
+}
+
+###
+GET https://api.muliaprivileges.com/profile/mypoints/99868
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW1iZXJJZCI6Ijk5ODY4IiwiZmlyc3RfbmFtZSI6IkpvaG4gTm9lbCIsImxhc3RfbmFtZSI6IkFuZGVyc29uIiwiZW1haWwiOiJpd2FuX2xlbWJvbmdAeWFob28uY29tIiwiaWF0IjoxNzc3MDgxNjQxLCJleHAiOjE3NzcwODI1NDF9.hdUOE0SnvgmXy11tkBO6ffEMgP-Mg2It2L2IMGc-P3I 
+
+###
+GET https://api.muliaprivileges.com/outlets/jakarta
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW1iZXJJZCI6Ijk5ODY4IiwiZmlyc3RfbmFtZSI6IkpvaG4gTm9lbCIsImxhc3RfbmFtZSI6IkFuZGVyc29uIiwiZW1haWwiOiJpd2FuX2xlbWJvbmdAeWFob28uY29tIiwiaWF0IjoxNzc3MDgyNjM1LCJleHAiOjE3NzcwODM1MzV9.HsoG5bwZYvZqw4k6z0FOZakBZC3YMWa4HCsqquW8RC4
+
+
+###
+POST http://localhost:3009/members/login
+Content-Type: application/json
+
+{
+    "email": "iwan_lembong@yahoo.com",
+    "password": "123456"
+}
+
+###
+GET http://localhost:3009/profile/mypoints/99868
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW1iZXJJZCI6Ijk5ODY4IiwiZmlyc3RfbmFtZSI6IkpvaG4gTm9lbCIsImxhc3RfbmFtZSI6IkFuZGVyc29uIiwiZW1haWwiOiJpd2FuX2xlbWJvbmdAeWFob28uY29tIiwiaWF0IjoxNzc3MDgxNTkwLCJleHAiOjE3NzcwODI0OTB9.AbkuYa7ZBVbx86msM21hrUisa7LMcPXZkvGz3gL7Oyw
+
+###
+GET http://localhost:3009/outlets/jakarta
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZW1iZXJJZCI6Ijk5ODY4IiwiZmlyc3RfbmFtZSI6IkpvaG4gTm9lbCIsImxhc3RfbmFtZSI6IkFuZGVyc29uIiwiZW1haWwiOiJpd2FuX2xlbWJvbmdAeWFob28uY29tIiwiaWF0IjoxNzc3MDgyNTU0LCJleHAiOjE3NzcwODM0NTR9.M0sFmoBvEVbvIHXa5OjGB0v8z7Jn42l9B0LtbTbL9SE
+

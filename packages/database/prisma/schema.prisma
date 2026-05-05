@@ -45,18 +45,47 @@ model Product {
   categoryId  Int
   category    Category  @relation(fields: [categoryId], references: [id])
   createdAt   DateTime  @default(now())
+
+  orderItems  OrderItem[]
 }
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 
 model Order {
   id        Int      @id @default(autoincrement())
   name      String
+  email     String
   phone     String
-  address   String
   city      String
-  note      String?
-  total     Int
-  status    String   @default("Pending")
-  createdAt DateTime @default(now())
+  address   String
+  notes     String?
+  total     Float
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+
+  orderId   Int
+  productId Int
+
+  quantity  Int
+  price     Float
+  subtotal  Float
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
 model Content {

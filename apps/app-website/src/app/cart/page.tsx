@@ -11,41 +11,15 @@ export default function CartPage() {
             localStorage.getItem("cart") || "[]"
         );
 
-        const grouped = data.reduce(
-            (acc: any[], item: any) => {
-                const existing = acc.find(
-                    (p) => p.id === item.id
-                );
-
-                if (existing) {
-                    existing.qty += 1;
-                } else {
-                    acc.push({
-                        ...item,
-                        qty: 1
-                    });
-                }
-
-                return acc;
-            },
-            []
-        );
-
-        setCart(grouped);
+        setCart(data);
     }, []);
 
     const updateCart = (updatedCart: any[]) => {
         setCart(updatedCart);
 
-        const flatCart = updatedCart.flatMap((item) =>
-            Array(item.qty).fill({
-                ...item
-            })
-        );
-
         localStorage.setItem(
             "cart",
-            JSON.stringify(flatCart)
+            JSON.stringify(updatedCart)
         );
     };
 
@@ -106,10 +80,11 @@ export default function CartPage() {
                             </h2>
 
                             <p>
-                                Rp{" "}
-                                {item.price.toLocaleString(
-                                    "id-ID"
-                                )}
+                                Qty: {item.qty}
+                            </p>
+
+                            <p>
+                                Rp {(item.price * item.qty).toLocaleString("id-ID")}
                             </p>
                         </div>
 

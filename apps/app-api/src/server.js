@@ -101,7 +101,7 @@ app.post(
     }
 );
 
-app.put("/products/:id",  auth(["SUPERADMIN", "PRODUCT_ADMIN"]), upload.single("image"), async (req, res) => {
+app.put("/products/:id", auth(["SUPERADMIN", "PRODUCT_ADMIN"]), upload.single("image"), async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -137,7 +137,7 @@ app.put("/products/:id",  auth(["SUPERADMIN", "PRODUCT_ADMIN"]), upload.single("
     }
 });
 
-app.delete("/products/:id",  auth(["SUPERADMIN", "PRODUCT_ADMIN"]), async (req, res) => {
+app.delete("/products/:id", auth(["SUPERADMIN", "PRODUCT_ADMIN"]), async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -169,7 +169,7 @@ app.get("/categories", async (req, res) => {
 });
 
 // ORDERS
-app.get("/orders", async (req, res) => {
+app.get("/orders", auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
     try {
         const orders = await prisma.order.findMany({
             orderBy: {
@@ -185,37 +185,111 @@ app.get("/orders", async (req, res) => {
     }
 });
 
-app.post("/orders",  auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
-    try {
-        const {
-            name,
-            phone,
-            address,
-            city,
-            note,
-            total
-        } = req.body;
+app.post("/orders", async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      city,
+      address,
+      notes,
+      total,
+      items
+    } = req.body;
 
-        const order = await prisma.order.create({
+    const order = await prisma.$transaction(
+      async (tx) => {
+
+        // cek stok dulu
+        for (const item of items) {
+          const product =
+            await tx.product.findUnique({
+              where: {
+                id: item.id
+              }
+            });
+
+          if (!product) {
+            throw new Error(
+              `Produk tidak ditemukan`
+            );
+          }
+
+          if (
+            product.stock <
+            (item.qty || 1)
+          ) {
+            throw new Error(
+              `Stok ${product.name} tidak cukup`
+            );
+          }
+        }
+
+        // create order
+        const createdOrder =
+          await tx.order.create({
             data: {
-                name,
-                phone,
-                address,
-                city,
-                note,
-                total: Number(total)
+              name,
+              email,
+              phone,
+              city,
+              address,
+              notes,
+              total: Number(total),
+              status: "PENDING",
+              items: {
+                create: items.map(
+                  (item) => ({
+                    productId: item.id,
+                    quantity:
+                      item.qty || 1,
+                    price: item.price,
+                    subtotal:
+                      item.price *
+                      (item.quantity || 1)
+                  })
+                )
+              }
+            },
+            include: {
+              items: {
+                include: {
+                  product: true
+                }
+              }
             }
-        });
+          });
 
-        res.status(201).json(order);
-    } catch (error) {
-        res.status(500).json({
-            error: error.message
-        });
-    }
+        // reduce stock
+        for (const item of items) {
+          await tx.product.update({
+            where: {
+              id: item.id
+            },
+            data: {
+              stock: {
+                decrement:
+                  item.qty || 1
+              }
+            }
+          });
+        }
+
+        return createdOrder;
+      }
+    );
+
+    res.status(201).json(order);
+
+  } catch (error) {
+    res.status(500).json({
+      error: error.message
+    });
+  }
 });
 
-app.put("/orders/:id/status",  auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
+app.put("/orders/:id/status", auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
@@ -237,7 +311,7 @@ app.put("/orders/:id/status",  auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, 
     }
 });
 
-app.delete("/orders/:id",  auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
+app.delete("/orders/:id", auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
     try {
         await prisma.order.delete({
             where: {
@@ -256,7 +330,7 @@ app.delete("/orders/:id",  auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res)
 });
 
 // CONTENT
-app.get("/content",  async (req, res) => {
+app.get("/content", async (req, res) => {
     const content =
         await prisma.content.findFirst();
 

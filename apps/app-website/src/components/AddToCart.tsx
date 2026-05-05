@@ -10,14 +10,43 @@ export default function AddToCart({
       localStorage.getItem("cart") || "[]"
     );
 
-    cart.push(product);
+    const existingIndex =
+      cart.findIndex(
+        (item: any) =>
+          item.id === product.id
+      );
+
+    let updatedCart;
+
+    if (existingIndex !== -1) {
+      updatedCart = cart.map(
+        (item: any) =>
+          item.id === product.id
+            ? {
+              ...item,
+              qty:
+                item.qty + 1
+            }
+            : item
+      );
+    } else {
+      updatedCart = [
+        ...cart,
+        {
+          ...product,
+          qty: 1
+        }
+      ];
+    }
 
     localStorage.setItem(
       "cart",
-      JSON.stringify(cart)
+      JSON.stringify(updatedCart)
     );
 
-    alert("Produk ditambahkan ke cart");
+    alert(
+      "Produk ditambahkan ke cart"
+    );
   };
 
   return (

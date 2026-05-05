@@ -12,10 +12,11 @@ export default function CheckoutPage() {
 
   const [form, setForm] = useState({
     name: "",
+    email: "",
     phone: "",
     address: "",
     city: "",
-    note: ""
+    notes: ""
   });
 
   useEffect(() => {
@@ -27,7 +28,8 @@ export default function CheckoutPage() {
   }, []);
 
   const total = cart.reduce(
-    (sum, item) => sum + item.price,
+    (sum, item) =>
+      sum + item.price * item.qty,
     0
   );
 
@@ -38,22 +40,29 @@ export default function CheckoutPage() {
     });
   };
 
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    await axios.post(
-      `${API_URL}/orders`,
-      {
+    console.log(cart, "isi cart sekarang");
+
+    try {
+      await axios.post(`${API_URL}/orders`, {
         ...form,
-        total
-      }
-    );
+        total,
+        items: cart
+      });
 
-    localStorage.removeItem("cart");
+      localStorage.removeItem("cart");
 
-    const wa = `https://wa.me/6281234567890?text=Halo, saya sudah checkout order kopi toraja`;
+      const wa =
+        `https://wa.me/6281234567890?text=Halo, saya sudah checkout order kopi toraja`;
 
-    window.location.href = wa;
+      window.location.href = wa;
+    } catch (error) {
+      console.error(error);
+      alert("Checkout gagal");
+    }
   };
 
   return (
@@ -69,6 +78,14 @@ export default function CheckoutPage() {
         <input
           name="name"
           placeholder="Nama"
+          onChange={handleChange}
+          className="w-full border p-3 rounded"
+        />
+
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
           onChange={handleChange}
           className="w-full border p-3 rounded"
         />
@@ -95,7 +112,7 @@ export default function CheckoutPage() {
         />
 
         <textarea
-          name="note"
+          name="notes"
           placeholder="Catatan"
           onChange={handleChange}
           className="w-full border p-3 rounded"

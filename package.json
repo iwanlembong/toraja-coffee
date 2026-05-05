@@ -4,7 +4,10 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "prisma:generate": "prisma generate --schema=packages/database/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=packages/database/prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema=packages/database/prisma/schema.prisma"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

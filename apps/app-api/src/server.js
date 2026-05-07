@@ -169,124 +169,247 @@ app.get("/categories", async (req, res) => {
 });
 
 // ORDERS
-app.get("/orders", auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
-    try {
-        const orders = await prisma.order.findMany({
-            orderBy: {
-                createdAt: "desc"
-            }
-        });
+app.get(
+  "/orders",
+  auth(["SUPERADMIN", "ORDER_ADMIN"]),
 
-        res.json(orders);
+  async (req, res) => {
+    try {
+      const page = Number(
+        req.query.page || 1
+      );
+
+      const limit = Number(
+        req.query.limit || 10
+      );
+
+      const search =
+        req.query.search || "";
+
+      const status =
+        req.query.status || "ALL";
+
+      const skip =
+        (page - 1) * limit;
+
+      const where = {
+        AND: [
+          search
+            ? {
+                OR: [
+                  {
+                    name: {
+                      contains:
+                        search,
+                    },
+                  },
+
+                  {
+                    email: {
+                      contains:
+                        search,
+                    },
+                  },
+
+                  {
+                    phone: {
+                      contains:
+                        search,
+                    },
+                  },
+                ],
+              }
+            : {},
+
+          status !== "ALL"
+            ? {
+                status,
+              }
+            : {},
+        ],
+      };
+
+      const [
+        orders,
+        total,
+      ] = await Promise.all([
+        prisma.order.findMany({
+          where,
+
+          skip,
+
+          take: limit,
+
+          orderBy: {
+            createdAt:
+              "desc",
+          },
+
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        }),
+
+        prisma.order.count({
+          where,
+        }),
+      ]);
+
+      res.json({
+        data: orders,
+
+        pagination: {
+          total,
+
+          page,
+
+          limit,
+
+          totalPages:
+            Math.ceil(
+              total / limit
+            ),
+        },
+      });
     } catch (error) {
-        res.status(500).json({
-            error: error.message
-        });
+      res.status(500).json({
+        error:
+          error.message,
+      });
     }
-});
+  }
+);
 
 app.post("/orders", async (req, res) => {
-  try {
-    const {
-      name,
-      email,
-      phone,
-      city,
-      address,
-      notes,
-      total,
-      items
-    } = req.body;
+    try {
+        const {
+            name,
+            email,
+            phone,
+            city,
+            address,
+            notes,
+            total,
+            items
+        } = req.body;
 
-    const order = await prisma.$transaction(
-      async (tx) => {
-
-        // cek stok dulu
-        for (const item of items) {
-          const product =
-            await tx.product.findUnique({
-              where: {
-                id: item.id
-              }
+        if (!items || items.length === 0) {
+            return res.status(409).json({
+                error: "Keranjang kosong"
             });
-
-          if (!product) {
-            throw new Error(
-              `Produk tidak ditemukan`
-            );
-          }
-
-          if (
-            product.stock <
-            (item.qty || 1)
-          ) {
-            throw new Error(
-              `Stok ${product.name} tidak cukup`
-            );
-          }
         }
 
-        // create order
-        const createdOrder =
-          await tx.order.create({
-            data: {
-              name,
-              email,
-              phone,
-              city,
-              address,
-              notes,
-              total: Number(total),
-              status: "PENDING",
-              items: {
-                create: items.map(
-                  (item) => ({
-                    productId: item.id,
-                    quantity:
-                      item.qty || 1,
-                    price: item.price,
-                    subtotal:
-                      item.price *
-                      (item.quantity || 1)
-                  })
-                )
-              }
-            },
-            include: {
-              items: {
-                include: {
-                  product: true
+        const order =
+            await prisma.$transaction(
+                async (tx) => {
+
+                    // cek stok
+                    for (const item of items) {
+                        const product =
+                            await tx.product.findUnique({
+                                where: {
+                                    id: item.id
+                                }
+                            });
+
+                        if (!product) {
+                            throw {
+                                status: 404,
+                                message:
+                                    "Produk tidak ditemukan"
+                            };
+                        }
+
+                        if (
+                            product.stock <
+                            (item.qty || 1)
+                        ) {
+                            throw {
+                                status: 409,
+                                message: `Stok ${product.name} tidak cukup`
+                            };
+                        }
+                    }
+
+                    // create order
+                    const createdOrder =
+                        await tx.order.create({
+                            data: {
+                                name,
+                                email,
+                                phone,
+                                city,
+                                address,
+                                notes,
+                                total:
+                                    Number(total),
+                                status:
+                                    "PENDING",
+                                items: {
+                                    create:
+                                        items.map(
+                                            (
+                                                item
+                                            ) => ({
+                                                productId:
+                                                    item.id,
+                                                quantity:
+                                                    item.qty ||
+                                                    1,
+                                                price:
+                                                    item.price,
+                                                subtotal:
+                                                    item.price *
+                                                    (item.qty ||
+                                                        1)
+                                            })
+                                        )
+                                }
+                            },
+                            include: {
+                                items: {
+                                    include: {
+                                        product: true
+                                    }
+                                }
+                            }
+                        });
+
+                    // reduce stock
+                    for (const item of items) {
+                        await tx.product.update({
+                            where: {
+                                id: item.id
+                            },
+                            data: {
+                                stock: {
+                                    decrement:
+                                        item.qty ||
+                                        1
+                                }
+                            }
+                        });
+                    }
+
+                    return createdOrder;
                 }
-              }
-            }
-          });
+            );
 
-        // reduce stock
-        for (const item of items) {
-          await tx.product.update({
-            where: {
-              id: item.id
-            },
-            data: {
-              stock: {
-                decrement:
-                  item.qty || 1
-              }
-            }
-          });
-        }
+        res.status(201).json(order);
 
-        return createdOrder;
-      }
-    );
-
-    res.status(201).json(order);
-
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
+    } catch (error) {
+        res.status(
+            error.status || 500
+        ).json({
+            error:
+                error.message ||
+                "Terjadi kesalahan server"
+        });
+    }
 });
 
 app.put("/orders/:id/status", auth(["SUPERADMIN", "ORDER_ADMIN"]), async (req, res) => {
@@ -486,6 +609,181 @@ app.post("/seed-admin", async (req, res) => {
 
     res.json(user);
 });
+
+
+// analytics
+app.get(
+    "/analytics",
+    auth(["SUPERADMIN"]),
+    async (req, res) => {
+        try {
+            // total order
+            const totalOrders =
+                await prisma.order.count();
+
+            // total revenue
+            const revenueResult =
+                await prisma.order.aggregate({
+                    _sum: {
+                        total: true
+                    }
+                });
+
+            const revenue =
+                revenueResult._sum
+                    .total || 0;
+
+            const rawStatusSummary =
+                await prisma.order.groupBy({
+                    by: ["status"],
+                    _count: {
+                        _all: true
+                    }
+                });
+
+            // summary status
+            const statusSummary =
+                rawStatusSummary.map(
+                    (item) => ({
+                        status: item.status,
+                        count:
+                            item._count._all
+                    })
+                );
+
+            // recent orders
+            const recentOrders =
+                await prisma.order.findMany({
+                    orderBy: {
+                        createdAt: "desc"
+                    },
+                    take: 5
+                });
+
+            // top products
+            const topProducts =
+                await prisma.orderItem.groupBy({
+                    by: ["productId"],
+                    _sum: {
+                        quantity: true
+                    },
+                    orderBy: {
+                        _sum: {
+                            quantity: "desc"
+                        }
+                    },
+                    take: 5
+                });
+
+            const products =
+                await Promise.all(
+                    topProducts.map(
+                        async (item) => {
+                            const product =
+                                await prisma.product.findUnique(
+                                    {
+                                        where: {
+                                            id:
+                                                item.productId
+                                        }
+                                    }
+                                );
+
+                            return {
+                                name:
+                                    product?.name ||
+                                    "Unknown",
+                                sold:
+                                    item._sum
+                                        .quantity
+                            };
+                        }
+                    )
+                );
+
+            // low stock
+            const lowStock =
+                await prisma.product.findMany(
+                    {
+                        where: {
+                            stock: {
+                                lte: 5
+                            }
+                        },
+                        select: {
+                            id: true,
+                            name: true,
+                            stock: true
+                        }
+                    }
+                );
+
+            // sales trend 7 hari
+            const orders =
+                await prisma.order.findMany({
+                    where: {
+                        createdAt: {
+                            gte: new Date(
+                                Date.now() -
+                                7 *
+                                24 *
+                                60 *
+                                60 *
+                                1000
+                            )
+                        }
+                    },
+                    select: {
+                        createdAt: true,
+                        total: true
+                    }
+                });
+
+            const salesTrendMap =
+                {};
+
+            orders.forEach((order) => {
+                const date =
+                    order.createdAt.toLocaleDateString(
+                        "id-ID"
+                    );
+
+                salesTrendMap[
+                    date
+                ] =
+                    (salesTrendMap[
+                        date
+                    ] || 0) +
+                    order.total;
+            });
+
+            const salesTrend =
+                Object.entries(
+                    salesTrendMap
+                ).map(
+                    ([date, total]) => ({
+                        date,
+                        total
+                    })
+                );
+
+            res.json({
+                totalOrders,
+                revenue,
+                statusSummary,
+                recentOrders,
+                products,
+                lowStock,
+                salesTrend
+            });
+        } catch (error) {
+            res.status(500).json({
+                error:
+                    error.message
+            });
+        }
+    }
+);
 
 const PORT = process.env.PORT || 4000;
 

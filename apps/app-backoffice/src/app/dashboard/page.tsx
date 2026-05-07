@@ -5,7 +5,7 @@ import { API_URL } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+export default function DashboardPage() {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
@@ -60,34 +60,40 @@ export default function Dashboard() {
             <div className="grid grid-cols-3 gap-6 mt-10">
 
                 {(user.role === "SUPERADMIN" ||
-                  user.role === "PRODUCT_ADMIN") && (
-                    <Link
-                        href="/dashboard/products"
-                        className="bg-white shadow p-6 rounded-xl block"
-                    >
-                        Kelola Produk
-                    </Link>
-                )}
+                    user.role === "PRODUCT_ADMIN") && (
+                        <Link
+                            href="/dashboard/products"
+                            className="bg-white shadow p-6 rounded-xl block"
+                        >
+                            Kelola Produk
+                        </Link>
+                    )}
 
                 {(user.role === "SUPERADMIN" ||
-                  user.role === "CONTENT_ADMIN") && (
-                    <Link
-                        href="/dashboard/content"
-                        className="bg-white shadow p-6 rounded-xl block"
-                    >
-                        Kelola Konten
-                    </Link>
-                )}
+                    user.role === "CONTENT_ADMIN") && (
+                        <Link
+                            href="/dashboard/content"
+                            className="bg-white shadow p-6 rounded-xl block"
+                        >
+                            Kelola Konten
+                        </Link>
+                    )}
 
                 {(user.role === "SUPERADMIN" ||
-                  user.role === "ORDER_ADMIN") && (
-                    <Link
-                        href="/dashboard/orders"
-                        className="bg-white shadow p-6 rounded-xl block"
-                    >
-                        Kelola Pesanan
-                    </Link>
-                )}
+                    user.role === "ORDER_ADMIN") && (
+                        <Link
+                            href="/dashboard/orders"
+                            className="bg-white shadow p-6 rounded-xl block"
+                        >
+                            Kelola Pesanan
+                        </Link>
+                    )}
+
+                <Link href="/dashboard/analytics"
+                    className="bg-white shadow p-6 rounded-xl block"
+                >
+                    Analytics
+                </Link>
 
                 <button
                     onClick={handleLogout}

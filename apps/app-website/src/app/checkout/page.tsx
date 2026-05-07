@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const router = useRouter();
-
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState<any[]>([]);
 
   const [form, setForm] = useState({
@@ -44,7 +45,8 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    console.log(cart, "isi cart sekarang");
+    setErrorMessage("");
+    setLoading(true);
 
     try {
       await axios.post(`${API_URL}/orders`, {
@@ -59,9 +61,18 @@ export default function CheckoutPage() {
         `https://wa.me/6281234567890?text=Halo, saya sudah checkout order kopi toraja`;
 
       window.location.href = wa;
-    } catch (error) {
-      console.error(error);
-      alert("Checkout gagal");
+
+    } catch (error: any) {
+      // console.error(error);
+
+      const message =
+        error.response?.data?.error ||
+        "Checkout gagal";
+
+      setErrorMessage(message);
+
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,15 +129,22 @@ export default function CheckoutPage() {
           className="w-full border p-3 rounded"
         />
 
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {errorMessage}
+          </div>
+        )}
+
         <div className="text-2xl font-bold">
           Total: Rp {total.toLocaleString("id-ID")}
         </div>
 
         <button
+          disabled={loading}
           className="bg-black text-white px-8 py-4 rounded-lg"
           type="submit"
         >
-          Buat Pesanan
+           {loading ? "Memproses pesanan..." : "Buat Pesanan"}
         </button>
       </form>
     </main>

@@ -44,6 +44,10 @@ export default function AddToCart({
       JSON.stringify(updatedCart)
     );
 
+    window.dispatchEvent(
+      new Event("storage")
+    );
+
     alert(
       "Produk ditambahkan ke cart"
     );

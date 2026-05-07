@@ -1,71 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { API_URL } from "@/lib/api";
+import React from "react";
+import useOrders from "@/hooks/useOrders";
 
-const checkAccess = async () => {
-  const res = await axios.get(
-    `${API_URL}/auth/me`,
-    {
-      withCredentials: true
-    }
-  );
-
-  const role = res.data.role;
-
-  if (
-    role !== "SUPERADMIN" &&
-    role !== "ORDER_ADMIN"
-  ) {
-    window.location.href = "/dashboard";
-  }
-};
+import StatusBadge from "@/components/StatusBadge";
+import ViewToggle from "@/components/orders/ViewToggle";
+import ExportToolbar from "@/components/orders/ExportToolbar";
+import BulkToolbar from "@/components/orders/BulkToolbar";
+import Pagination from "@/components/orders/Pagination";
+import OrderTable from "@/components/orders/OrderTable";
+import OrderKanban from "@/components/orders/OrderKanban";
+import OrderCard from "@/components/orders/OrderCard";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([]);
+  const {
+    orders,
+    pagination,
+    loading,
 
-  const fetchOrders = async () => {
-    const res = await axios.get(
-      `${API_URL}/orders`,
-      {
-        withCredentials: true
-      }
-    );
+    page,
+    setPage,
 
-    setOrders(res.data);
-  };
+    search,
+    setSearch,
 
-  useEffect(() => {
-    checkAccess();
-    fetchOrders();
-  }, []);
+    statusFilter,
+    setStatusFilter,
 
-  const updateStatus = async (
-    id: number,
-    status: string
-  ) => {
-    await axios.put(
-      `${API_URL}/orders/${id}/status`,
-      { status },
-      {
-        withCredentials: true
-      }
-    );
+    selectedOrders,
+    toggleOrderSelection,
+    toggleSelectAll,
 
-    fetchOrders();
-  };
+    bulkStatus,
+    setBulkStatus,
+    bulkUpdateStatus,
+    bulkDeleteOrders,
 
-  const deleteOrder = async (id: number) => {
-    await axios.delete(
-      `${API_URL}/orders/${id}`,
-      {
-        withCredentials: true
-      }
-    );
+    expandedOrder,
+    setExpandedOrder,
 
-    fetchOrders();
-  };
+    exportCSV,
+    exporting,
+
+    updateStatus,
+    deleteOrder,
+
+    handleDragEnd,
+  } = useOrders();
+
+  const [viewMode, setViewMode] = React.useState("card");
+
+  const statuses = [
+    "PENDING",
+    "PAID",
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED",
+  ];
+  
 
   return (
     <main className="p-10">
@@ -73,64 +66,87 @@ export default function OrdersPage() {
         Order Management
       </h1>
 
-      <div className="space-y-6">
-        {orders.map((order: any) => (
-          <div
-            key={order.id}
-            className="border rounded-xl p-6"
-          >
-            <h2 className="font-bold text-xl">
-              {order.name}
-            </h2>
+      {/* FILTER */}
+      <div className="flex gap-4 mb-8">
+        <input
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          className="border p-3 rounded-lg flex-1"
+        />
 
-            <p>{order.phone}</p>
-            <p>{order.city}</p>
-            <p>{order.address}</p>
-
-            {order.notes && (
-              <p>
-                Catatan: {order.notes}
-              </p>
-            )}
-
-            <p className="mt-3 font-bold">
-              Rp{" "}
-              {order.total.toLocaleString(
-                "id-ID"
-              )}
-            </p>
-
-            <div className="mt-4 flex gap-4">
-              <select
-                value={order.status}
-                onChange={(e) =>
-                  updateStatus(
-                    order.id,
-                    e.target.value
-                  )
-                }
-                className="border p-2 rounded"
-              >
-                <option value="PENDING">PENDING</option>
-                <option value="PAID">PAID</option>
-                <option value="PROCESSING">PROCESSING</option>
-                <option value="SHIPPED">SHIPPED</option>
-                <option value="DELIVERED">DELIVERED</option>
-                <option value="CANCELLED">CANCELLED</option>
-              </select>
-
-              <button
-                onClick={() =>
-                  deleteOrder(order.id)
-                }
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        ))}
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setPage(1);
+            setStatusFilter(e.target.value as any);
+          }}
+          className="border p-3 rounded-lg"
+        >
+          <option value="ALL">Semua Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="PAID">Paid</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="SHIPPED">Shipped</option>
+          <option value="DELIVERED">Delivered</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
       </div>
+
+      {/* TOOLBARS */}
+      <ExportToolbar
+        selectedOrders={selectedOrders}
+        exportCSV={exportCSV}
+        exporting={exporting}
+      />
+
+      <BulkToolbar
+        selectedOrders={selectedOrders}
+        bulkStatus={bulkStatus}
+        setBulkStatus={setBulkStatus}
+        bulkUpdateStatus={bulkUpdateStatus}
+        bulkDeleteOrders={bulkDeleteOrders}
+      />
+
+      {/* VIEW */}
+      {loading ? (
+        <div>Loading...</div>
+      ) : viewMode === "card" ? (
+        orders.map((order) => (
+          <OrderCard
+            key={order.id}
+            order={order}
+            expandedOrder={expandedOrder}
+            setExpandedOrder={setExpandedOrder}
+            updateStatus={updateStatus}
+            deleteOrder={deleteOrder}
+          />
+        ))
+      ) : viewMode === "table" ? (
+        <OrderTable
+          filteredOrders={orders}
+          selectedOrders={selectedOrders}
+          toggleSelectAll={toggleSelectAll}
+          toggleOrderSelection={toggleOrderSelection}
+          expandedOrder={expandedOrder}
+          setExpandedOrder={setExpandedOrder}
+          deleteOrder={deleteOrder}
+        />
+      ) : (
+        <OrderKanban
+          filteredOrders={orders}
+          statuses={statuses}
+          handleDragEnd={handleDragEnd}
+        />
+      )}
+
+      <Pagination
+        page={page}
+        totalPages={pagination?.totalPages || 1}
+        setPage={setPage}
+      />
     </main>
   );
 }

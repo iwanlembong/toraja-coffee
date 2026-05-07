@@ -21,6 +21,10 @@ export default function CartPage() {
             "cart",
             JSON.stringify(updatedCart)
         );
+
+        window.dispatchEvent(
+            new Event("storage")
+        );
     };
 
     const increaseQty = (id: number) => {

@@ -1,20 +1,21 @@
 "use client";
 
 import StatusBadge from "@/components/StatusBadge";
+import {
+  ORDER_STATUSES
+} from "@/types/order";
+
+import type {
+  Order,
+  OrderStatus
+} from "@/types/order";
 
 type Props = {
-  order: any;
+  order: Order;
   expandedOrder: number | null;
-  setExpandedOrder: (
-    id: number | null
-  ) => void;
-  updateStatus: (
-    id: number,
-    status: string
-  ) => void;
-  deleteOrder: (
-    id: number
-  ) => void;
+  setExpandedOrder: (id: number | null) => void;
+  updateStatus: (id: number, status: OrderStatus) => Promise<void>;
+  setDeleteOrderId: (id: number | null) => void;
 };
 
 export default function OrderCard({
@@ -22,10 +23,10 @@ export default function OrderCard({
   expandedOrder,
   setExpandedOrder,
   updateStatus,
-  deleteOrder,
+  setDeleteOrderId,
 }: Props) {
   return (
-    <div className="border rounded-xl p-6">
+    <div className="border border-gray-200 rounded-2xl p-6 bg-white shadow-sm hover:shadow-lg transition-all duration-200">
       <h2 className="font-bold text-xl">
         {order.name}
       </h2>
@@ -37,7 +38,7 @@ export default function OrderCard({
       </div>
 
       {order.notes && (
-        <p>
+        <p className="mt-2 text-sm text-gray-600">
           Catatan: {order.notes}
         </p>
       )}
@@ -57,16 +58,13 @@ export default function OrderCard({
 
       {expandedOrder ===
         order.id && (
-        <div className="mt-6 border-t pt-4">
-          <h3 className="font-bold mb-3">
-            Detail Pesanan
-          </h3>
+          <div className="mt-6 border-t pt-4">
+            <h3 className="font-bold mb-3">
+              Detail Pesanan
+            </h3>
 
-          <div className="space-y-3">
-            {order.items.map(
-              (
-                item: any
-              ) => (
+            <div className="space-y-3">
+              {order.items?.map((item) => (
                 <div
                   key={item.id}
                   className="flex justify-between border-b pb-2"
@@ -95,10 +93,10 @@ export default function OrderCard({
                   </p>
                 </div>
               )
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       <div className="mt-4 flex gap-4">
         <button
@@ -110,10 +108,10 @@ export default function OrderCard({
                 : order.id
             )
           }
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
           {expandedOrder ===
-          order.id
+            order.id
             ? "Sembunyikan"
             : "Lihat Detail"}
         </button>
@@ -123,44 +121,24 @@ export default function OrderCard({
           onChange={(e) =>
             updateStatus(
               order.id,
-              e.target.value
+              e.target.value as OrderStatus
             )
           }
-          className="border p-2 rounded"
+          className="border px-4 py-2 rounded-lg"
         >
-          <option value="PENDING">
-            PENDING
-          </option>
-          <option value="PAID">
-            PAID
-          </option>
-          <option value="PROCESSING">
-            PROCESSING
-          </option>
-          <option value="SHIPPED">
-            SHIPPED
-          </option>
-          <option value="DELIVERED">
-            DELIVERED
-          </option>
-          <option value="CANCELLED">
-            CANCELLED
-          </option>
+          {ORDER_STATUSES.map((status) => (
+            <option key={status} value={status}>
+              {status.charAt(0) +
+                status
+                  .slice(1)
+                  .toLowerCase()}
+            </option>
+          ))}
         </select>
 
         <button
-          onClick={() => {
-            if (
-              confirm(
-                "Hapus order ini?"
-              )
-            ) {
-              deleteOrder(
-                order.id
-              );
-            }
-          }}
-          className="bg-red-500 text-white px-4 py-2 rounded"
+          onClick={() => setDeleteOrderId(order.id)}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg"
         >
           Hapus
         </button>

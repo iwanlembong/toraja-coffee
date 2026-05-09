@@ -21,9 +21,7 @@ type Props = {
     id: number | null
   ) => void;
 
-  deleteOrder: (
-    id: number
-  ) => void;
+  setDeleteOrderId: (id: number | null) => void;
 };
 
 export default function OrderTable({
@@ -33,7 +31,7 @@ export default function OrderTable({
   toggleOrderSelection,
   expandedOrder,
   setExpandedOrder,
-  deleteOrder,
+  setDeleteOrderId,
 }: Props) {
   return (
     <div className="overflow-x-auto rounded-xl border bg-white">
@@ -45,7 +43,7 @@ export default function OrderTable({
                 type="checkbox"
                 checked={
                   selectedOrders.length ===
-                    filteredOrders.length &&
+                  filteredOrders.length &&
                   filteredOrders.length > 0
                 }
                 onChange={
@@ -142,26 +140,13 @@ export default function OrderTable({
                         className="bg-blue-500 text-white px-3 py-1 rounded"
                       >
                         {expandedOrder ===
-                        order.id
+                          order.id
                           ? "Hide"
                           : "Detail"}
                       </button>
 
                       <button
-                        onClick={() => {
-                          const confirmed =
-                            confirm(
-                              "Hapus order ini?"
-                            );
-
-                          if (
-                            confirmed
-                          ) {
-                            deleteOrder(
-                              order.id
-                            );
-                          }
-                        }}
+                        onClick={() => setDeleteOrderId(order.id)}
                         className="bg-red-500 text-white px-3 py-1 rounded"
                       >
                         Delete
@@ -172,70 +157,70 @@ export default function OrderTable({
 
                 {expandedOrder ===
                   order.id && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="bg-gray-50 p-6"
-                    >
-                      <div className="space-y-4">
-                        <h3 className="font-bold text-lg">
-                          Detail Pesanan
-                        </h3>
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="bg-gray-50 p-6"
+                      >
+                        <div className="space-y-4">
+                          <h3 className="font-bold text-lg">
+                            Detail Pesanan
+                          </h3>
 
-                        {order.items.map(
-                          (
-                            item: any
-                          ) => (
-                            <div
-                              key={
-                                item.id
-                              }
-                              className="flex justify-between border-b pb-2"
-                            >
-                              <div>
-                                <p className="font-medium">
-                                  {
-                                    item
-                                      .product
-                                      .name
-                                  }
-                                </p>
+                          {order.items.map(
+                            (
+                              item: any
+                            ) => (
+                              <div
+                                key={
+                                  item.id
+                                }
+                                className="flex justify-between border-b pb-2"
+                              >
+                                <div>
+                                  <p className="font-medium">
+                                    {
+                                      item
+                                        .product
+                                        .name
+                                    }
+                                  </p>
 
-                                <p className="text-sm text-gray-500">
-                                  Qty:{" "}
-                                  {
-                                    item.quantity
-                                  }
+                                  <p className="text-sm text-gray-500">
+                                    Qty:{" "}
+                                    {
+                                      item.quantity
+                                    }
+                                  </p>
+                                </div>
+
+                                <p className="font-semibold">
+                                  Rp{" "}
+                                  {item.subtotal.toLocaleString(
+                                    "id-ID"
+                                  )}
                                 </p>
                               </div>
+                            )
+                          )}
 
+                          {order.notes && (
+                            <div>
                               <p className="font-semibold">
-                                Rp{" "}
-                                {item.subtotal.toLocaleString(
-                                  "id-ID"
-                                )}
+                                Catatan:
+                              </p>
+
+                              <p className="text-gray-600">
+                                {
+                                  order.notes
+                                }
                               </p>
                             </div>
-                          )
-                        )}
-
-                        {order.notes && (
-                          <div>
-                            <p className="font-semibold">
-                              Catatan:
-                            </p>
-
-                            <p className="text-gray-600">
-                              {
-                                order.notes
-                              }
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
               </React.Fragment>
             )
           )}

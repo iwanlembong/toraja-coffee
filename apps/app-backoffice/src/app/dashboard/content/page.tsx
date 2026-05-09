@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "@/lib/api";
+import BackToDashboard from "@/components/admin/BackToDashboard";
 
 const checkAccess = async () => {
     const res = await axios.get(
@@ -58,7 +59,9 @@ export default function ContentPage() {
   if (!content) return <div>Loading...</div>;
 
   return (
-    <main className="p-10">
+    <div>
+      <BackToDashboard />
+
       <h1 className="text-4xl font-bold mb-8">
         Content Management
       </h1>
@@ -101,6 +104,6 @@ export default function ContentPage() {
           Simpan
         </button>
       </div>
-    </main>
+    </div>
   );
 }

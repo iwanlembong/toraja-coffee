@@ -1,13 +1,10 @@
 import { API_URL } from "@/lib/api";
 import AddToCart from "@/components/AddToCart";
 
-async function getProducts() {
-  const res = await fetch(
-    `${API_URL}/products`,
-    {
-      cache: "no-store",
-    }
-  );
+async function getProduct(slug: string) {
+  const res = await fetch(`${API_URL}/products/slug/${slug}`, {
+    cache: "no-store",
+  });
 
   return res.json();
 }
@@ -15,23 +12,21 @@ async function getProducts() {
 export default async function ProductDetail({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
 
-  const products = await getProducts();
-
-  const product = products.find(
-    (p: any) => p.slug === slug
-  );
+  const product = await getProduct(slug);
 
   if (!product) {
     return (
-      <div className="p-10">
+      <div className="p-10 text-center">
         Produk tidak ditemukan
       </div>
     );
   }
+
+console.log(product);
 
   return (
     <main className="max-w-6xl mx-auto py-16 px-6">
@@ -44,7 +39,7 @@ export default async function ProductDetail({
 
         <div>
           <p className="text-sm text-gray-500">
-            {product.category.name}
+            {product.category?.name}
           </p>
 
           <h1 className="text-4xl font-bold mt-2">

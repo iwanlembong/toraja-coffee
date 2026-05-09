@@ -1,14 +1,8 @@
 "use client";
 
-import {
-    useEffect,
-    useState
-} from "react";
-
+import { useEffect, useState } from "react";
 import axios from "axios";
-
 import { API_URL } from "@/lib/api";
-
 import {
     LineChart,
     Line,
@@ -19,273 +13,303 @@ import {
     PieChart,
     Pie,
     Cell,
-    BarChart,
-    Bar
 } from "recharts";
 
+import BackToDashboard from "@/components/admin/BackToDashboard";
+
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
 export default function AnalyticsPage() {
-    const [data, setData] =
-        useState<any>(null);
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    const [range, setRange] = useState("7d");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
+    const [dark, setDark] = useState(false);
+
+
+    useEffect(() => {
+        const saved = localStorage.getItem("theme");
+        if (saved === "dark") {
+            setDark(true);
+            document.documentElement.classList.add("dark");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (dark) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        }
+    }, [dark]);
 
     useEffect(() => {
         fetchAnalytics();
-    }, []);
+    }, [range]);
 
-    const fetchAnalytics =
-        async () => {
-            const res =
-                await axios.get(
-                    `${API_URL}/analytics`,
-                    {
-                        withCredentials:
-                            true
-                    }
-                );
+    const fetchAnalytics = async () => {
+        setLoading(true);
+
+        try {
+            const res = await axios.get(`${API_URL}/analytics`, {
+                params: {
+                    range,
+                    startDate,
+                    endDate,
+                },
+                withCredentials: true,
+            });
 
             setData(res.data);
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    if (!data)
+    // =====================
+    // LOADING SKELETON
+    // =====================
+    if (loading) {
         return (
-            <p className="p-10">
-                Loading...
-            </p>
+            <div className="p-6 space-y-6 animate-pulse">
+                <div className="h-10 w-1/3 bg-gray-200 rounded" />
+                <div className="grid md:grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-24 bg-gray-200 rounded-xl" />
+                    ))}
+                </div>
+                <div className="h-64 bg-gray-200 rounded-xl" />
+            </div>
         );
+    }
 
-    const COLORS = [
-        "#0088FE",
-        "#00C49F",
-        "#FFBB28",
-        "#FF8042",
-        "#8884d8",
-        "#ff4d4f"
-    ];
+    if (!data) return <p className="p-10">No data</p>;
+
+    // =====================
+    // SIMPLE GROWTH MOCK (bisa backend nanti)
+    // =====================
+    const growth = (value: number) => {
+        const random = Math.floor(Math.random() * 20 - 5);
+        return {
+            value,
+            percent: random,
+        };
+    };
+
+    const totalOrders = growth(data.totalOrders);
+    const revenue = growth(data.revenue);
 
     return (
-        <main className="p-10 space-y-10">
-            <h1 className="text-4xl font-bold">
-                Dashboard Analytics
-            </h1>
+        <div className="p-6 space-y-8 bg-stone-50 dark:bg-stone-950 text-black dark:text-white min-h-screen transition-colors duration-300">
+            <BackToDashboard />
 
-            {data.totalOrders < 5 && (
-                <p className="text-sm text-gray-500 mt-2">
-                    Tambahkan lebih banyak transaksi untuk insight yang lebih akurat
-                </p>
-            )}
+            {/* HEADER */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
 
-            {/* cards */}
-            <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2>Total Orders</h2>
-                    <p className="text-3xl font-bold">
-                        {
-                            data.totalOrders
-                        }
-                    </p>
-                </div>
+                {/* FILTER */}
+                <div className="flex gap-2 items-center">
+                    <button
+                        onClick={() => setDark(!dark)}
+                        className="px-4 py-2 rounded-lg border bg-white dark:bg-stone-800 dark:text-white transition"
+                    >
+                        {dark ? "☀ Light" : "🌙 Dark"}
+                    </button>
 
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2>Total Revenue</h2>
-                    <p className="text-3xl font-bold">
-                        Rp{" "}
-                        {data.revenue.toLocaleString(
-                            "id-ID"
-                        )}
-                    </p>
-                </div>
+                    <select
+                        className="border rounded px-3 py-2 bg-white dark:bg-stone-800 dark:text-white"
+                        value={range}
+                        onChange={(e) => setRange(e.target.value)}
+                    >
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                        <option value="custom">Custom</option>
+                    </select>
 
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2>
-                        Produk
-                        Terlaris
-                    </h2>
-                    <p className="text-xl font-bold">
-                        {data.products[0]
-                            ?.name ||
-                            "-"}
-                    </p>
+                    {range === "custom" && (
+                        <>
+                            <input
+                                type="date"
+                                className="border rounded px-2 py-2 bg-white text-black dark:bg-stone-800 dark:text-white"
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                            <input
+                                type="date"
+                                className="border rounded px-2 py-2 bg-white text-black dark:bg-stone-800 dark:text-white"
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                            <button
+                                onClick={fetchAnalytics}
+                                className="px-4 py-2 rounded bg-amber-600 text-white hover:bg-amber-700 transition dark:bg-amber-500 dark:hover:bg-amber-600"
+                            >
+                                Apply
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
 
-            {/* sales trend */}
-            <div className="bg-white rounded-xl shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">
-                    Sales Trend
-                </h2>
+            {/* KPI CARDS */}
+            <div className="grid md:grid-cols-3 gap-4">
+                <KpiCard
+                    title="Total Orders"
+                    value={totalOrders.value}
+                    growth={totalOrders.percent}
+                />
 
-                <ResponsiveContainer
-                    width="100%"
-                    height={300}
-                >
-                    <LineChart
-                        data={
-                            data.salesTrend
-                        }
-                    >
+                <KpiCard
+                    title="Revenue"
+                    value={`Rp ${revenue.value.toLocaleString("id-ID")}`}
+                    growth={revenue.percent}
+                />
+
+                <KpiCard
+                    title="Top Product"
+                    value={data.products?.[0]?.name || "-"}
+                    growth={5}
+                />
+            </div>
+
+            {/* SALES TREND */}
+            <div className="bg-white dark:bg-stone-900 p-6 rounded-xl shadow">
+                <h2 className="font-bold mb-4">Sales Trend</h2>
+
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={data.salesTrend}>
                         <XAxis dataKey="date" />
                         <YAxis />
-                        <Tooltip
-                            formatter={(value: any) =>
-                                `Rp ${value.toLocaleString("id-ID")}`
-                            }
-                        />
+                        <Tooltip />
                         <Line
                             type="monotone"
                             dataKey="total"
-                            stroke="#2563eb"
+                            stroke="#16a34a"
                             strokeWidth={3}
-                            dot={{ r: 6 }}
                         />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
 
-            {/* charts */}
+            {/* CHARTS */}
             <div className="grid md:grid-cols-2 gap-6">
+                {/* STATUS */}
+                <div className="bg-white dark:bg-stone-900 p-6 rounded-xl shadow">
+                    <h2 className="font-bold mb-4">Order Status</h2>
 
-                {/* status */}
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2 className="text-2xl font-bold mb-4">
-                        Order Status
-                    </h2>
-
-                    <ResponsiveContainer
-                        width="100%"
-                        height={300}
-                    >
+                    <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                             <Pie
-                                data={
-                                    data.statusSummary
-                                }
+                                data={data.statusSummary}
                                 dataKey="count"
                                 nameKey="status"
-                                outerRadius={110}
-                                label={({ name, percent }) => {
-                                    const value = percent ?? 0;
-                                    return `${name} ${(value * 100).toFixed(0)}%`;
-                                }}
+                                outerRadius={100}
                             >
-                                {data.statusSummary.map(
-                                    (
-                                        _: any,
-                                        index: number
-                                    ) => (
-                                        <Cell
-                                            key={
-                                                index
-                                            }
-                                            fill={
-                                                COLORS[
-                                                index %
-                                                COLORS.length
-                                                ]
-                                            }
-                                        />
-                                    )
-                                )}
+                                {data.statusSummary.map((_: any, i: number) => (
+                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                ))}
                             </Pie>
                             <Tooltip />
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
 
-                {/* top products */}
-                <div className="bg-white rounded-xl shadow p-6">
-                    <h2 className="text-2xl font-bold mb-4">
-                        Top Products
-                    </h2>
+                {/* TOP PRODUCTS */}
+                <div className="bg-white dark:bg-stone-900 p-6 rounded-xl shadow">
+                    <h2 className="font-bold mb-4">Top Products</h2>
 
-                    <ResponsiveContainer
-                        width="100%"
-                        height={300}
-                    >
-                        <BarChart
-                            data={
-                                data.products
-                            }
-                        >
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={data.products}>
                             <XAxis dataKey="name" />
-                            <YAxis
-                                tickFormatter={(value) =>
-                                    `${value / 1000}k`
-                                }
-                            />
+                            <YAxis />
                             <Tooltip />
-                            <Bar
-                                dataKey="sold"
-                                fill="#16a34a"
-                                radius={[8, 8, 0, 0]}
-                            />
-                        </BarChart>
+                            <Line dataKey="sold" stroke="#2563eb" />
+                        </LineChart>
                     </ResponsiveContainer>
                 </div>
             </div>
 
-            {/* low stock */}
-            <div className="bg-white rounded-xl shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">
-                    Low Stock Alert
-                </h2>
+            {/* LOW STOCK */}
+            <div className="bg-white p-6 rounded-xl shadow">
+                <h2 className="font-bold mb-4">Low Stock</h2>
 
-                {data.lowStock.length === 0 ? (
-                    <p className="text-green-600 font-medium">
-                        Semua stok aman
-                    </p>
-                ) : (
-                    <div className="space-y-3">
-                        {data.lowStock.map(
-                            (item: any) => (
-                                <div
-                                    key={item.id}
-                                    className={`border rounded-lg p-4 flex justify-between items-center ${item.stock <= 2
-                                        ? "border-red-300 bg-red-50 text-red-700"
-                                        : "border-yellow-300 bg-yellow-50 text-yellow-700"
-                                        }`}
-                                >
-                                    <div>
-                                        <strong>
-                                            {item.name}
-                                        </strong>
-                                    </div>
-
-                                    <div className="font-bold">
-                                        Stok: {item.stock}
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* recent orders */}
-            <div className="bg-white rounded-xl shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">
-                    Recent Orders
-                </h2>
-
-                {data.recentOrders.map(
-                    (
-                        order: any
-                    ) => (
+                <div className="space-y-2">
+                    {data.lowStock.map((item: any) => (
                         <div
-                            key={
-                                order.id
-                            }
-                            className="border-b py-3"
+                            key={item.id}
+                            className="flex justify-between border p-3 rounded"
                         >
-                            {
-                                order.name
-                            }{" "}
-                            - Rp{" "}
-                            {order.total.toLocaleString(
-                                "id-ID"
-                            )}
+                            <span>{item.name}</span>
+                            <span className="font-bold">{item.stock}</span>
                         </div>
-                    )
-                )}
+                    ))}
+                </div>
             </div>
-        </main>
+
+            {/* RECENT ORDERS */}
+            <div className="bg-white dark:bg-stone-900 p-6 rounded-xl shadow">
+                <h2 className="font-bold mb-4">Recent Orders</h2>
+
+                <div className="divide-y">
+                    {data.recentOrders?.length === 0 ? (
+                        <p className="text-gray-500 dark:text-gray-400">No orders yet</p>
+                    ) : (
+                        data.recentOrders.map((order: any) => (
+                            <div
+                                key={order.id}
+                                className="py-3 flex items-center justify-between"
+                            >
+                                <div>
+                                    <p className="font-medium">{order.name}</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        {order.status}
+                                    </p>
+                                </div>
+
+                                <div className="text-right">
+                                    <p className="font-bold">
+                                        Rp {order.total.toLocaleString("id-ID")}
+                                    </p>
+                                    <p className="text-xs text-gray-400">
+                                        {new Date(order.createdAt).toLocaleDateString(
+                                            "id-ID"
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// =====================
+// KPI CARD COMPONENT
+// =====================
+function KpiCard({
+    title,
+    value,
+    growth,
+}: any) {
+    const isPositive = growth >= 0;
+
+    return (
+        <div className="bg-white dark:bg-stone-900 p-5 rounded-xl shadow hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">{title}</p>
+
+            <h3 className="text-2xl font-bold mt-2">{value}</h3>
+
+            <p
+                className={`text-sm mt-2 ${isPositive ? "text-green-600" : "text-red-500"
+                    }`}
+            >
+                {isPositive ? "▲" : "▼"} {Math.abs(growth)}%
+            </p>
+        </div>
     );
 }

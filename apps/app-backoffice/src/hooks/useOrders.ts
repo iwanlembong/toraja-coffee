@@ -2,8 +2,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "@/lib/api";
 import type { Pagination } from "@/types/pagination";
-import type { Order } from "@/types/order";
-import type { OrderStatus } from "@/types/order";
+
+import type {
+  Order,
+  OrderStatus,
+  StatusFilter
+} from "@/types/order";
+
+import {
+  ORDER_STATUSES
+} from "@/types/order";
+
 import type { DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 
 
@@ -15,29 +24,17 @@ export default function useOrders() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  type StatusFilter = OrderStatus | "ALL";
-
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [loading, setLoading] = useState(false);
 
   const [selectedOrders, setSelectedOrders] = useState<number[]>([]);
-  const [bulkStatus, setBulkStatus] = useState("");
+  const [bulkStatus, setBulkStatus] = useState<OrderStatus | "">("");
 
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
 
-  const ORDER_STATUSES = [
-    "PENDING",
-    "PAID",
-    "PROCESSING",
-    "SHIPPED",
-    "DELIVERED",
-    "CANCELLED",
-  ] as const;
-
-  type OrderStatus = typeof ORDER_STATUSES[number];
 
   // debounce search
   useEffect(() => {
@@ -85,9 +82,12 @@ export default function useOrders() {
     );
 
     try {
-      await axios.put(`${API_URL}/orders/${id}/status`, {
-        status,
-      });
+      await axios.put(`${API_URL}/orders/${id}/status`,
+        { status },
+        {
+          withCredentials: true,
+        }
+      );
     } catch (err) {
       fetchOrders(); // rollback kalau gagal
     }
@@ -211,19 +211,28 @@ export default function useOrders() {
 
   // drag & drop
   const handleDragEnd = async (event: DragEndEvent) => {
+
+    console.log("END", {
+      active: event.active.id,
+      over: event.over?.id,
+    });
+
     const { active, over } = event;
 
     if (!over) return;
 
     const id = Number(active.id);
-    if (isNaN(id)) return;
-
-    const status = over.id as OrderStatus;
+    const status = String(over.id) as OrderStatus;
 
     // validasi status langsung (tanpa array baru tiap render)
-    if (!ORDER_STATUSES.includes(status)) return;
+    if (!ORDER_STATUSES.includes(status))
+      return;
 
-    const order = orders.find((o) => o.id === id);
+
+    const order = orders.find(
+      (o) => o.id === id
+    );
+
     if (!order) return;
 
     if (order.status === status) return;
@@ -233,6 +242,9 @@ export default function useOrders() {
 
 
   const handleDragStart = (event: DragStartEvent) => {
+
+    console.log("START", event.active.id);
+
     const order = orders.find(
       (o) => o.id === Number(event.active.id)
     );

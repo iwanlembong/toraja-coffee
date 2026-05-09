@@ -3,297 +3,384 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "@/lib/api";
+import BackToDashboard from "@/components/admin/BackToDashboard";
+import ProductModal from "@/components/products/ProductModal";
+import type { Product, ProductInput } from "@/types/product";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
-const checkAccess = async () => {
-    const res = await axios.get(
-        `${API_URL}/auth/me`,
-        {
-            withCredentials: true
+export default function ProductsPage() {
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [pagination, setPagination] = useState<any>(null);
+
+    const [showModal, setShowModal] = useState(false);
+
+    const [categories, setCategories] = useState<
+        { id: number; name: string }[]
+    >([]);
+
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+
+    const [deleteProductId, setDeleteProductId] = useState<number | null>(null);
+
+    const [sortBy, setSortBy] = useState<string>("name");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+
+    const handleSort = (field: string) => {
+        setPage(1); // 🔥 penting
+
+        if (sortBy === field) {
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+        } else {
+            setSortBy(field);
+            setSortOrder("asc");
         }
-    );
+    };
 
-    const role = res.data.role;
+    const buildFormData = (
+        data: ProductInput
+    ) => {
+        const formData = new FormData();
 
-    if (
-        role !== "SUPERADMIN" &&
-        role !== "PRODUCT_ADMIN"
-    ) {
-        window.location.href = "/dashboard";
-    }
-};
-
-export default function ProductPage() {
-    const [products, setProducts] = useState([]);
-    const [editingId, setEditingId] =
-        useState<number | null>(null);
-    const [image, setImage] =
-        useState<File | null>(null);
-
-    const [form, setForm] = useState({
-        name: "",
-        slug: "",
-        description: "",
-        price: "",
-        stock: "",
-        categoryId: "1",
-    });
-
-    const fetchProducts = async () => {
-        const res = await axios.get(
-            `${API_URL}/products`,
-            {
-                withCredentials: true,
-            }
+        formData.append("name", data.name);
+        formData.append("slug", data.slug);
+        formData.append("description", data.description);
+        formData.append("price", String(data.price));
+        formData.append("stock", String(data.stock));
+        formData.append(
+            "categoryId",
+            String(data.categoryId)
         );
 
-        setProducts(res.data);
+
+        if (data.image instanceof File) {
+            formData.append("image", data.image);
+        }
+
+        return formData;
+    };
+
+    const createProduct = async (
+        data: ProductInput
+    ) => {
+        await axios.post(
+            `${API_URL}/products`,
+            buildFormData(data),
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type":
+                        "multipart/form-data",
+                },
+            }
+        );
+    };
+
+    const updateProduct = async (
+        data: ProductInput
+    ) => {
+        await axios.put(
+            `${API_URL}/products/${data.id}`,
+            buildFormData(data),
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type":
+                        "multipart/form-data",
+                },
+            }
+        );
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const res = await axios.get(
+                `${API_URL}/categories`,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            setCategories(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const res = await axios.get(
+                `${API_URL}/products`,
+                {
+                    params: {
+                        page,
+                        limit: 10,
+                        search: debouncedSearch,
+                        sortBy,
+                        sortOrder,
+                    },
+                }
+            );
+
+            setProducts(res.data.data);
+            setPagination(res.data.pagination);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleSave = async (
+        data: ProductInput
+    ) => {
+        if (data.id) {
+            await updateProduct(data);
+        } else {
+            await createProduct(data);
+        }
+
+        setShowModal(false);
+        fetchProducts();
+    };
+
+    const handleDelete = async () => {
+        if (!deleteProductId) return;
+
+        try {
+            await axios.delete(
+                `${API_URL}/products/${deleteProductId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            setDeleteProductId(null);
+            fetchProducts();
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     useEffect(() => {
-        checkAccess();
-        fetchProducts();
+        fetchCategories();
     }, []);
 
-    const handleChange = (e: any) => {
-        setForm({
-            ...form,
-            [e.target.name]:
-                e.target.value,
-        });
-    };
-
-    const resetForm = () => {
-        setForm({
-            name: "",
-            slug: "",
-            description: "",
-            price: "",
-            stock: "",
-            categoryId: "1",
-        });
-
-        setEditingId(null);
-        setImage(null);
-    };
-
-    const handleSubmit = async (
-        e: any
-    ) => {
-        e.preventDefault();
-
-        const formData =
-            new FormData();
-
-        Object.entries(form).forEach(
-            ([key, value]) => {
-                formData.append(
-                    key,
-                    value
-                );
-            }
-        );
-
-        if (image) {
-            formData.append(
-                "image",
-                image
-            );
-        }
-
-        try {
-            if (editingId) {
-                await axios.put(
-                    `${API_URL}/products/${editingId}`,
-                    formData,
-                    {
-                        withCredentials: true,
-                    }
-                );
-            } else {
-                await axios.post(
-                    `${API_URL}/products`,
-                    formData,
-                    {
-                        withCredentials: true,
-                    }
-                );
-            }
-
-            fetchProducts();
-            resetForm();
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleDelete = async (
-        id: number
-    ) => {
-        await axios.delete(
-            `${API_URL}/products/${id}`,
-            {
-                withCredentials: true,
-            }
-        );
-
-        fetchProducts();
-    };
-
     const handleEdit = (
-        product: any
+        product: Product
     ) => {
-        setEditingId(product.id);
-
-        setForm({
-            name: product.name,
-            slug: product.slug,
-            description:
-                product.description,
-            price:
-                product.price.toString(),
-            stock:
-                product.stock.toString(),
-            categoryId:
-                product.categoryId.toString(),
-        });
+        setEditingProduct(product);
+        setShowModal(true);
     };
+
+    useEffect(() => {
+        fetchProducts();
+    }, [page, debouncedSearch, sortBy, sortOrder]);
 
     return (
-        <main className="p-10">
-            <h1 className="text-3xl font-bold mb-8">
-                Kelola Produk
-            </h1>
+        <div>
+            {/* HEADER */}
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <BackToDashboard />
 
-            <form
-                onSubmit={
-                    handleSubmit
-                }
-                className="space-y-4 max-w-xl mb-12"
-            >
-                <input
-                    name="name"
-                    placeholder="Nama Produk"
-                    value={form.name}
-                    onChange={
-                        handleChange
-                    }
-                    className="w-full border p-3 rounded"
-                />
-
-                <input
-                    name="slug"
-                    placeholder="Slug"
-                    value={form.slug}
-                    onChange={
-                        handleChange
-                    }
-                    className="w-full border p-3 rounded"
-                />
-
-                <textarea
-                    name="description"
-                    placeholder="Deskripsi"
-                    value={
-                        form.description
-                    }
-                    onChange={
-                        handleChange
-                    }
-                    className="w-full border p-3 rounded"
-                />
-
-                <input
-                    name="price"
-                    type="number"
-                    placeholder="Harga"
-                    value={form.price}
-                    onChange={
-                        handleChange
-                    }
-                    className="w-full border p-3 rounded"
-                />
-
-                <input
-                    name="stock"
-                    type="number"
-                    placeholder="Stok"
-                    value={form.stock}
-                    onChange={
-                        handleChange
-                    }
-                    className="w-full border p-3 rounded"
-                />
-
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) =>
-                        setImage(
-                            e.target
-                                .files?.[0] ||
-                            null
-                        )
-                    }
-                    className="w-full border p-3 rounded"
-                />
+                    <h1 className="text-4xl font-bold mt-2">
+                        Kelola Produk
+                    </h1>
+                </div>
 
                 <button
-                    className="bg-black text-white px-6 py-3 rounded"
-                    type="submit"
-                >
-                    {editingId
-                        ? "Update Produk"
-                        : "Tambah Produk"}
+                    onClick={() => {
+                        setEditingProduct(null);
+                        setShowModal(true);
+                    }}
+                    className="bg-black text-white px-5 py-3 rounded-xl">
+                    + Add New Product
                 </button>
-            </form>
+            </div>
 
-            <div className="space-y-4">
-                {products.map(
-                    (product: any) => (
-                        <div
-                            key={product.id}
-                            className="border p-4 rounded flex justify-between items-center"
-                        >
-                            <div>
-                                <h2 className="font-bold">
-                                    {product.name}
-                                </h2>
-
-                                <p>
-                                    Rp{" "}
-                                    {product.price.toLocaleString(
-                                        "id-ID"
-                                    )}
-                                </p>
-                            </div>
-
-                            <div className="space-x-2">
-                                <button
-                                    onClick={() =>
-                                        handleEdit(
-                                            product
-                                        )
-                                    }
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    onClick={() =>
-                                        handleDelete(
-                                            product.id
-                                        )
-                                    }
-                                    className="bg-red-500 text-white px-4 py-2 rounded"
-                                >
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
-                    )
+            <div className="flex items-center justify-between mb-6">
+                <input
+                    type="text"
+                    placeholder="Cari produk..."
+                    value={search}
+                    onChange={(e) => {
+                        setPage(1);
+                        setSearch(e.target.value);
+                    }}
+                    className="border px-4 py-3 rounded-xl w-80"
+                />
+                {search !== debouncedSearch && (
+                    <p className="text-sm text-gray-500 mt-1">
+                        Searching...
+                    </p>
                 )}
             </div>
-        </main>
+
+            {/* TABLE */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                        <tr>
+                            <th
+                                className="p-4 text-left cursor-pointer select-none"
+                                onClick={() => handleSort("name")}
+                            >
+                                Nama Produk
+                                {sortBy === "name" && (
+                                    <span className="ml-1">
+                                        {sortOrder === "asc" ? "↑" : "↓"}
+                                    </span>
+                                )}
+                            </th>
+
+                            <th
+                                className="p-4 text-left cursor-pointer select-none"
+                                onClick={() => handleSort("slug")}
+                            >
+                                Slug
+                                {sortBy === "slug" && (
+                                    <span className="ml-1">
+                                        {sortOrder === "asc" ? "↑" : "↓"}
+                                    </span>
+                                )}
+                            </th>
+
+                            <th
+                                className="p-4 text-center cursor-pointer select-none"
+                                onClick={() => handleSort("price")}
+                            >
+                                Harga
+                                {sortBy === "price" && (
+                                    <span className="ml-1">
+                                        {sortOrder === "asc" ? "↑" : "↓"}
+                                    </span>
+                                )}
+                            </th>
+
+                            <th
+                                className="p-4 text-center cursor-pointer select-none"
+                                onClick={() => handleSort("stock")}
+                            >
+                                Stock
+                                {sortBy === "stock" && (
+                                    <span className="ml-1">
+                                        {sortOrder === "asc" ? "↑" : "↓"}
+                                    </span>
+                                )}
+                            </th>
+
+                            <th className="p-4 text-center">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {products.map(
+                            (product) => (
+                                <tr
+                                    key={product.id}
+                                    className="border-b hover:bg-gray-50"
+                                >
+                                    <td className="p-4 font-medium">
+                                        {product.name}
+                                    </td>
+
+                                    <td className="p-4 text-gray-500">
+                                        {product.slug}
+                                    </td>
+
+                                    <td className="p-4 text-center">
+                                        Rp{" "}
+                                        {product.price.toLocaleString(
+                                            "id-ID"
+                                        )}
+                                    </td>
+
+                                    <td className="p-4 text-center">
+                                        {product.stock}
+                                    </td>
+
+                                    <td className="p-4">
+                                        <div className="flex justify-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingProduct(product);
+                                                    setShowModal(true);
+                                                }}
+                                                className="bg-blue-500 text-white px-3 py-1 rounded-lg"
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                onClick={() => setDeleteProductId(product.id)}
+                                                className="bg-red-500 text-white px-3 py-1 rounded-lg"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* PAGINATION */}
+            <div className="flex justify-between items-center mt-6">
+                <button
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                >
+                    Prev
+                </button>
+
+                <span>
+                    Page {page} / {pagination?.totalPages || 1}
+                </span>
+
+                <button
+                    disabled={page === pagination?.totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="px-4 py-2 border rounded-lg disabled:opacity-50"
+                >
+                    Next
+                </button>
+            </div>
+
+            {showModal && (
+                <ProductModal
+                    product={editingProduct}
+                    categories={categories}
+                    onClose={() =>
+                        setShowModal(false)
+                    }
+                    onSave={handleSave}
+                />
+            )}
+
+            <ConfirmModal
+                open={deleteProductId !== null}
+                title="Hapus Produk"
+                message="Produk yang dihapus tidak dapat dikembalikan. Lanjutkan?"
+                confirmText="Ya, Hapus"
+                cancelText="Batal"
+                onClose={() => setDeleteProductId(null)}
+                onConfirm={handleDelete}
+            />
+        </div>
     );
 }

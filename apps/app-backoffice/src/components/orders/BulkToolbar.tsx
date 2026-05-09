@@ -1,17 +1,12 @@
+import type { OrderStatus, } from "@/types/order";
+import { ORDER_STATUSES } from "@/types/order";
+
 type Props = {
   selectedOrders: number[];
-
-  bulkStatus: string;
-
-  setBulkStatus: (
-    status: string
-  ) => void;
-
-  bulkUpdateStatus: (
-    status: string
-  ) => void;
-
-  bulkDeleteOrders: () => void;
+  bulkStatus: OrderStatus | "";
+  setBulkStatus: (status: OrderStatus | "") => void;
+  bulkUpdateStatus: (status: OrderStatus) => Promise<void>;
+  bulkDeleteOrders: () => Promise<void>;
 };
 
 export default function BulkToolbar({
@@ -38,7 +33,7 @@ export default function BulkToolbar({
           value={bulkStatus}
           onChange={(e) =>
             setBulkStatus(
-              e.target.value
+              e.target.value as OrderStatus | ""
             )
           }
           className="border p-2 rounded"
@@ -47,55 +42,43 @@ export default function BulkToolbar({
             Update Status
           </option>
 
-          <option value="PENDING">
-            PENDING
-          </option>
-
-          <option value="PAID">
-            PAID
-          </option>
-
-          <option value="PROCESSING">
-            PROCESSING
-          </option>
-
-          <option value="SHIPPED">
-            SHIPPED
-          </option>
-
-          <option value="DELIVERED">
-            DELIVERED
-          </option>
-
-          <option value="CANCELLED">
-            CANCELLED
-          </option>
+          {ORDER_STATUSES.map((status) => (
+            <option
+              key={status}
+              value={status}
+            >
+              {status.charAt(0) +
+                status
+                  .slice(1)
+                  .toLowerCase()}
+            </option>
+          ))}
         </select>
 
         <button
           disabled={!bulkStatus}
-          onClick={() =>
-            bulkUpdateStatus(
-              bulkStatus
-            )
-          }
-          className="bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+          onClick={async () => {
+            if (bulkStatus) {
+              await bulkUpdateStatus(bulkStatus);
+            }
+          }}
+          className="bg-black text-white px-4 py-2 rounded-lg disabled:opacity-50"
         >
           Apply
         </button>
 
         <button
-          onClick={() => {
+          onClick={async () => {
             const confirmed =
               confirm(
                 "Hapus semua order terpilih?"
               );
 
             if (confirmed) {
-              bulkDeleteOrders();
+              await bulkDeleteOrders();
             }
           }}
-          className="bg-red-500 text-white px-4 py-2 rounded"
+          className="bg-red-500 text-white px-4 py-2 rounded-lg"
         >
           Delete Selected
         </button>

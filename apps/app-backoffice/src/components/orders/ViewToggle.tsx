@@ -1,9 +1,20 @@
+export type ViewMode =
+  | "card"
+  | "table"
+  | "kanban";
+
 type Props = {
-  viewMode: "card" | "table" | "kanban";
+  viewMode: ViewMode;
   setViewMode: (
-    mode: "card" | "table" | "kanban"
+    mode: ViewMode
   ) => void;
 };
+
+const views: ViewMode[] = [
+  "card",
+  "table",
+  "kanban",
+];
 
 export default function ViewToggle({
   viewMode,
@@ -11,44 +22,23 @@ export default function ViewToggle({
 }: Props) {
   return (
     <div className="flex gap-2">
-      <button
-        onClick={() =>
-          setViewMode("card")
-        }
-        className={`px-4 py-2 rounded-lg border ${
-          viewMode === "card"
-            ? "bg-black text-white"
-            : "bg-white"
-        }`}
-      >
-        Card View
-      </button>
-
-      <button
-        onClick={() =>
-          setViewMode("table")
-        }
-        className={`px-4 py-2 rounded-lg border ${
-          viewMode === "table"
-            ? "bg-black text-white"
-            : "bg-white"
-        }`}
-      >
-        Table View
-      </button>
-
-      <button
-        onClick={() =>
-          setViewMode("kanban")
-        }
-        className={`px-4 py-2 rounded-lg border ${
-          viewMode === "kanban"
-            ? "bg-black text-white"
-            : "bg-white"
-        }`}
-      >
-        Kanban View
-      </button>
+      {views.map((mode) => (
+        <button
+          key={mode}
+          onClick={() =>
+            setViewMode(mode)
+          }
+          className={`px-4 py-2 rounded-lg border transition-all duration-200 ${
+            viewMode === mode
+              ? "bg-black text-white border-black"
+              : "bg-white hover:bg-gray-100"
+          }`}
+        >
+          {mode.charAt(0).toUpperCase() +
+            mode.slice(1)}{" "}
+          View
+        </button>
+      ))}
     </div>
   );
 }

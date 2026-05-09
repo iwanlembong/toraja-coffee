@@ -1,12 +1,18 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
+import React from "react";
+
+type Props = {
+  status: string;
+  children: React.ReactNode;
+};
 
 export default function DroppableColumn({
   status,
   children,
-}: any) {
-  const { setNodeRef } =
+}: Props) {
+  const { setNodeRef, isOver } =
     useDroppable({
       id: status,
     });
@@ -14,7 +20,18 @@ export default function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className="bg-gray-100 rounded-2xl p-4 min-h-[500px]"
+      className={`
+        min-h-[500px]
+        rounded-xl
+        border
+        p-4
+        transition-colors
+        ${
+          isOver
+            ? "bg-blue-50 border-blue-400"
+            : "bg-gray-50"
+        }
+      `}
     >
       {children}
     </div>

@@ -1,6 +1,8 @@
 import { API_URL } from "@/lib/api";
 import Link from "next/link";
 
+import { getImageUrl } from "@/lib/image";
+
 async function getProducts() {
   const res = await fetch(`${API_URL}/products`, {
     cache: "no-store",
@@ -23,8 +25,12 @@ async function getContent() {
 
 
 export default async function Home() {
-  const products = await getProducts();
+  const productsRes = await getProducts();
   const content = await getContent();
+
+  const products = productsRes?.data || [];
+
+console.log(products, ">>> isi products>>>")
 
   return (
     <main className="min-h-screen bg-stone-50">
@@ -109,7 +115,7 @@ export default async function Home() {
               >
                 <div className="overflow-hidden">
                   <img
-                    src={`${API_URL}${product.image}`}
+                    src={getImageUrl(product.image)}
                     alt={product.name}
                     className="h-72 w-full object-cover group-hover:scale-110 transition duration-700"
                   />

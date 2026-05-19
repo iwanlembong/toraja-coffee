@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "@/lib/api";
+import { getImageUrl } from "@/lib/image";
+import type { Product, ProductInput } from "@/types/product";
 import BackToDashboard from "@/components/admin/BackToDashboard";
 import ProductModal from "@/components/products/ProductModal";
-import type { Product, ProductInput } from "@/types/product";
+import StockBadge from "@/components/products/StockBadge";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import RestockModal from "@/components/products/RestockModal";
 
 export default function ProductsPage() {
     const [page, setPage] = useState(1);
@@ -16,9 +19,6 @@ export default function ProductsPage() {
 
     const [showModal, setShowModal] = useState(false);
 
-    const [categories, setCategories] = useState<
-        { id: number; name: string }[]
-    >([]);
 
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
@@ -27,6 +27,10 @@ export default function ProductsPage() {
 
     const [sortBy, setSortBy] = useState<string>("name");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+    const [categoryFilter, setCategoryFilter] = useState("");
+    const [stockFilter, setStockFilter] = useState("");
+    const [restockProduct, setRestockProduct] = useState<Product | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -129,6 +133,7 @@ export default function ProductsPage() {
                         search: debouncedSearch,
                         sortBy,
                         sortOrder,
+                        categoryId: categoryFilter,
                     },
                 }
             );
@@ -171,10 +176,6 @@ export default function ProductsPage() {
         }
     };
 
-    useEffect(() => {
-        fetchCategories();
-    }, []);
-
     const handleEdit = (
         product: Product
     ) => {
@@ -182,9 +183,51 @@ export default function ProductsPage() {
         setShowModal(true);
     };
 
+    const handleRestock = async (
+        quantity: number,
+        note: string
+    ) => {
+        if (!restockProduct) return;
+
+        try {
+            await axios.post(
+                `${API_URL}/inventory/restock/${restockProduct.id}`,
+                {
+                    quantity,
+                    note,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+
+            setRestockProduct(null);
+            fetchProducts();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     useEffect(() => {
         fetchProducts();
-    }, [page, debouncedSearch, sortBy, sortOrder]);
+    }, [page, debouncedSearch, sortBy, sortOrder, categoryFilter]);
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const criticalProducts =
+        products.filter(
+            (product) => product.stock <= 3
+        );
+
+    const lowProducts =
+        products.filter(
+            (product) =>
+                product.stock > 3 &&
+                product.stock <= 10
+        );
+
 
     return (
         <div>
@@ -208,23 +251,129 @@ export default function ProductsPage() {
                 </button>
             </div>
 
-            <div className="flex items-center justify-between mb-6">
-                <input
-                    type="text"
-                    placeholder="Cari produk..."
-                    value={search}
-                    onChange={(e) => {
-                        setPage(1);
-                        setSearch(e.target.value);
-                    }}
-                    className="border px-4 py-3 rounded-xl w-80"
-                />
-                {search !== debouncedSearch && (
-                    <p className="text-sm text-gray-500 mt-1">
-                        Searching...
-                    </p>
-                )}
+            <div className="space-y-6 mb-8">
+                {/* TOP TOOLBAR */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <input
+                            type="text"
+                            placeholder="Cari produk..."
+                            value={search}
+                            onChange={(e) => {
+                                setPage(1);
+                                setSearch(e.target.value);
+                            }}
+                            className="border px-4 py-3 rounded-xl w-full md:w-80"
+                        />
+
+                        <select
+                            value={categoryFilter}
+                            onChange={(e) => {
+                                setPage(1);
+                                setCategoryFilter(e.target.value);
+                            }}
+                            className="border px-4 py-3 rounded-xl"
+                        >
+                            <option value="">Semua Category</option>
+
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {categoryFilter && (
+                            <button
+                                onClick={() => setCategoryFilter("")}
+                                className="px-4 py-3 border rounded-xl"
+                            >
+                                Reset
+                            </button>
+                        )}
+                    </div>
+
+                    {search !== debouncedSearch && (
+                        <p className="text-sm text-gray-500">
+                            Searching...
+                        </p>
+                    )}
+                </div>
+
+                {/* STOCK SUMMARY */}
+                <div className="grid md:grid-cols-3 gap-4">
+                    <button
+                        onClick={() => setStockFilter("critical")}
+                        className="bg-red-50 border border-red-200 rounded-2xl p-5 text-left hover:shadow-md transition"
+                    >
+                        <p className="text-sm text-red-500">
+                            Critical Stock
+                        </p>
+
+                        <h3 className="text-3xl font-bold text-red-700 mt-2">
+                            {criticalProducts.length}
+                        </h3>
+
+                        <p className="text-sm text-red-500 mt-1">
+                            Perlu restock segera
+                        </p>
+                    </button>
+
+                    <button
+                        onClick={() => setStockFilter("low")}
+                        className="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 text-left hover:shadow-md transition"
+                    >
+                        <p className="text-sm text-yellow-600">
+                            Low Stock
+                        </p>
+
+                        <h3 className="text-3xl font-bold text-yellow-700 mt-2">
+                            {lowProducts.length}
+                        </h3>
+
+                        <p className="text-sm text-yellow-600 mt-1">
+                            Mulai menipis
+                        </p>
+                    </button>
+
+                    <button
+                        onClick={() => setStockFilter("")}
+                        className="bg-green-50 border border-green-200 rounded-2xl p-5 text-left hover:shadow-md transition"
+                    >
+                        <p className="text-sm text-green-600">
+                            All Products
+                        </p>
+
+                        <h3 className="text-3xl font-bold text-green-700 mt-2">
+                            {products.length}
+                        </h3>
+
+                        <p className="text-sm text-green-600 mt-1">
+                            Reset filter
+                        </p>
+                    </button>
+                </div>
             </div>
+
+            {stockFilter && (
+                <div className="mb-4 flex items-center justify-between">
+                    <p className="text-sm text-gray-500">
+                        Filter aktif:
+                        <span className="font-semibold ml-2">
+                            {stockFilter}
+                        </span>
+                    </p>
+
+                    <button
+                        onClick={() =>
+                            setStockFilter("")
+                        }
+                        className="text-sm text-blue-600"
+                    >
+                        Clear
+                    </button>
+                </div>
+            )}
 
             {/* TABLE */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -243,12 +392,11 @@ export default function ProductsPage() {
                                 )}
                             </th>
 
-                            <th
-                                className="p-4 text-left cursor-pointer select-none"
-                                onClick={() => handleSort("slug")}
+                            <th className="p-4 text-left cursor-pointer select-none"
+                                onClick={() => handleSort("categoryId")}
                             >
-                                Slug
-                                {sortBy === "slug" && (
+                                Category
+                                {sortBy === "categoryId" && (
                                     <span className="ml-1">
                                         {sortOrder === "asc" ? "↑" : "↓"}
                                     </span>
@@ -286,18 +434,53 @@ export default function ProductsPage() {
                     </thead>
 
                     <tbody>
-                        {products.map(
-                            (product) => (
+                        {products
+                            .filter((product) => {
+                                if (stockFilter === "critical")
+                                    return product.stock <= 3;
+
+                                if (stockFilter === "low")
+                                    return (
+                                        product.stock > 3 &&
+                                        product.stock <= 10
+                                    );
+
+                                if (stockFilter === "safe")
+                                    return product.stock > 10;
+
+                                return true;
+                            })
+                            .map((product) => (
                                 <tr
                                     key={product.id}
-                                    className="border-b hover:bg-gray-50"
+                                    className="border-b hover:bg-stone-50 transition-colors duration-200"
                                 >
-                                    <td className="p-4 font-medium">
-                                        {product.name}
+                                    <td className="p-4">
+                                        <div className="flex items-center gap-3">
+                                            {product.image && (
+                                                <img
+                                                    src={getImageUrl(product.image)}
+                                                    alt={product.name}
+                                                    className="w-14 h-14 object-cover rounded-xl"
+                                                />
+                                            )}
+
+                                            <div>
+                                                <p className="font-medium">
+                                                    {product.name}
+                                                </p>
+
+                                                <p className="text-xs text-gray-500">
+                                                    {product.slug}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </td>
 
-                                    <td className="p-4 text-gray-500">
-                                        {product.slug}
+                                    <td className="p-4">
+                                        <span className="px-3 py-1 bg-stone-100 rounded-full text-sm">
+                                            {product.category?.name || "-"}
+                                        </span>
                                     </td>
 
                                     <td className="p-4 text-center">
@@ -308,7 +491,7 @@ export default function ProductsPage() {
                                     </td>
 
                                     <td className="p-4 text-center">
-                                        {product.stock}
+                                        <StockBadge stock={product.stock} />
                                     </td>
 
                                     <td className="p-4">
@@ -324,6 +507,15 @@ export default function ProductsPage() {
                                             </button>
 
                                             <button
+                                                onClick={() =>
+                                                    setRestockProduct(product)
+                                                }
+                                                className="bg-green-500 text-white px-3 py-1 rounded-lg"
+                                            >
+                                                Restock
+                                            </button>
+
+                                            <button
                                                 onClick={() => setDeleteProductId(product.id)}
                                                 className="bg-red-500 text-white px-3 py-1 rounded-lg"
                                             >
@@ -333,7 +525,7 @@ export default function ProductsPage() {
                                     </td>
                                 </tr>
                             )
-                        )}
+                            )}
                     </tbody>
                 </table>
             </div>
@@ -381,6 +573,16 @@ export default function ProductsPage() {
                 onClose={() => setDeleteProductId(null)}
                 onConfirm={handleDelete}
             />
+
+            {restockProduct && (
+                <RestockModal
+                    product={restockProduct}
+                    onClose={() =>
+                        setRestockProduct(null)
+                    }
+                    onSubmit={handleRestock}
+                />
+            )}
         </div>
     );
 }

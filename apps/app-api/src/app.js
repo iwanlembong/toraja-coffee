@@ -4,6 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 
 const categoryRoutes = require("./routes/category.routes");
+const inventoryRoutes = require("./routes/inventory.routes");
 const productRoutes = require("./routes/product.routes");
 const orderRoutes = require("./routes/order.routes.js");
 const authRoutes = require("./routes/auth.routes");
@@ -30,6 +31,7 @@ app.use(
   express.static(path.join(__dirname, "../uploads"))
 );
 app.use("/categories", categoryRoutes);
+app.use("/inventory", inventoryRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/auth", authRoutes);

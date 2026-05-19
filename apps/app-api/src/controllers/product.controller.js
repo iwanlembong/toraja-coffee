@@ -5,6 +5,8 @@ exports.getProducts = async (req, res) => {
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const search = req.query.search || "";
+         const categoryId = req.query.categoryId;
+
 
         const allowedSort = ["name", "slug", "price", "stock", "createdAt"];
 
@@ -17,11 +19,28 @@ exports.getProducts = async (req, res) => {
 
         const skip = (page - 1) * limit;
 
+        // =========================
+        // FILTER
+        // =========================
         const where = {
-            OR: [
-                { name: { contains: search } },
-                { slug: { contains: search } },
-            ],
+            ...(search && {
+                OR: [
+                    {
+                        name: {
+                            contains: search,
+                        },
+                    },
+                    {
+                        slug: {
+                            contains: search,
+                        },
+                    },
+                ],
+            }),
+
+            ...(categoryId && {
+                categoryId: Number(categoryId),
+            }),
         };
 
         const [products, total] = await Promise.all([

@@ -21,6 +21,10 @@ const menus = [
         href: "/dashboard/products",
     },
     {
+        label: "Inventory",
+        href: "/dashboard/inventory"
+    },
+    {
         label: "Konten",
         href: "/dashboard/content",
     },

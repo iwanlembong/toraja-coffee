@@ -16,6 +16,7 @@ import {
 } from "recharts";
 
 import BackToDashboard from "@/components/admin/BackToDashboard";
+import RestockModal from "@/components/products/RestockModal";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -26,6 +27,9 @@ export default function AnalyticsPage() {
     const [range, setRange] = useState("7d");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+
+    const [showRestockModal, setShowRestockModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
     const [dark, setDark] = useState(false);
 
@@ -71,6 +75,26 @@ export default function AnalyticsPage() {
         }
     };
 
+    const handleRestock = async (
+        quantity: number,
+        note: string
+    ) => {
+        await axios.post(
+            `${API_URL}/inventory/restock`,
+            {
+                productId: selectedProduct.id,
+                quantity,
+                note,
+            },
+            {
+                withCredentials: true,
+            }
+        );
+
+        setShowRestockModal(false);
+        fetchAnalytics();
+    };
+
     // =====================
     // LOADING SKELETON
     // =====================
@@ -103,6 +127,18 @@ export default function AnalyticsPage() {
 
     const totalOrders = growth(data.totalOrders);
     const revenue = growth(data.revenue);
+
+    const criticalProducts =
+        data.products?.filter(
+            (product: any) => product.stock <= 3
+        ) || [];
+
+    const lowStockProducts =
+        data.products?.filter(
+            (product: any) =>
+                product.stock > 3 &&
+                product.stock <= 10
+        ) || [];
 
     return (
         <div className="p-6 space-y-8 bg-stone-50 dark:bg-stone-950 text-black dark:text-white min-h-screen transition-colors duration-300">
@@ -193,6 +229,38 @@ export default function AnalyticsPage() {
                     </LineChart>
                 </ResponsiveContainer>
             </div>
+            {/* INVENTORY MOVEMENT */}
+            <div className="bg-white dark:bg-stone-900 p-6 rounded-xl shadow">
+                <h2 className="font-bold mb-4">
+                    Inventory Movement
+                </h2>
+
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart
+                        data={data.inventoryMovement}
+                    >
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+
+                        <Line
+                            type="monotone"
+                            dataKey="IN"
+                            stroke="#16a34a"
+                            strokeWidth={3}
+                            name="Restock"
+                        />
+
+                        <Line
+                            type="monotone"
+                            dataKey="OUT"
+                            stroke="#dc2626"
+                            strokeWidth={3}
+                            name="Sales"
+                        />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
 
             {/* CHARTS */}
             <div className="grid md:grid-cols-2 gap-6">
@@ -233,20 +301,68 @@ export default function AnalyticsPage() {
             </div>
 
             {/* LOW STOCK */}
-            <div className="bg-white p-6 rounded-xl shadow">
-                <h2 className="font-bold mb-4">Low Stock</h2>
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold">
+                        Low Stock Alert
+                    </h2>
 
-                <div className="space-y-2">
-                    {data.lowStock.map((item: any) => (
-                        <div
-                            key={item.id}
-                            className="flex justify-between border p-3 rounded"
-                        >
-                            <span>{item.name}</span>
-                            <span className="font-bold">{item.stock}</span>
-                        </div>
-                    ))}
+                    <span className="text-sm text-gray-500">
+                        {criticalProducts.length + lowStockProducts.length} products
+                    </span>
                 </div>
+
+                {criticalProducts.length + lowStockProducts.length === 0 ? (
+                    <p className="text-gray-500 text-sm">
+                        Semua stok aman
+                    </p>
+                ) : (
+                    <div className="space-y-3">
+                        {[...criticalProducts, ...lowStockProducts]
+                            .sort((a, b) => a.stock - b.stock)
+                            .map(
+                                (product: any, index: number) => (
+                                    <div
+                                        key={`${product.id}-${index}`}
+                                        className={`flex items-center justify-between border rounded-xl px-4 py-3 ${product.stock <= 3
+                                            ? "border-red-200 bg-red-50"
+                                            : "border-yellow-200 bg-yellow-50"
+                                            }`}
+                                    >
+                                        <div>
+                                            <p className="font-medium">
+                                                {product.name}
+                                            </p>
+                                            <span
+                                                className={`text-xs px-2 py-1 rounded-full ${product.stock <= 3
+                                                    ? "bg-red-100 text-red-700"
+                                                    : "bg-yellow-100 text-yellow-700"
+                                                    }`}
+                                            >
+                                                {product.stock <= 3
+                                                    ? "Critical"
+                                                    : "Low"}
+                                            </span>
+
+                                            <p className="text-sm text-gray-500">
+                                                Stock: {product.stock}
+                                            </p>
+                                        </div>
+
+                                        <button
+                                            onClick={() => {
+                                                setSelectedProduct(product);
+                                                setShowRestockModal(true);
+                                            }}
+                                            className="bg-black text-white px-4 py-2 rounded-lg"
+                                        >
+                                            Restock
+                                        </button>
+                                    </div>
+                                )
+                            )}
+                    </div>
+                )}
             </div>
 
             {/* RECENT ORDERS */}
@@ -284,6 +400,15 @@ export default function AnalyticsPage() {
                     )}
                 </div>
             </div>
+            {showRestockModal && selectedProduct && (
+                <RestockModal
+                    product={selectedProduct}
+                    onClose={() =>
+                        setShowRestockModal(false)
+                    }
+                    onSubmit={handleRestock}
+                />
+            )}
         </div>
     );
 }

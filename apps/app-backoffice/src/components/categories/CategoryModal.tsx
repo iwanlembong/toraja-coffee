@@ -26,7 +26,18 @@ export default function CategoryModal({
   });
 
   useEffect(() => {
-    if (category) setForm(category);
+    if (category) {
+      setForm({
+        id: category.id,
+        name: category.name || "",
+        slug: category.slug || "",
+      });
+    } else {
+      setForm({
+        name: "",
+        slug: "",
+      });
+    }
   }, [category]);
 
   const handleChange = (
@@ -69,7 +80,7 @@ export default function CategoryModal({
 
           <input
             name="slug"
-            value={form.slug}
+            value={form.slug || ""}
             onChange={handleChange}
             placeholder="Slug"
             className="w-full border p-3 rounded-xl"

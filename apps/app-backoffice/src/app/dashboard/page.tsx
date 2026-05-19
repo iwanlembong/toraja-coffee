@@ -70,7 +70,7 @@ export default function DashboardPage() {
         : false;
 
     const cards = [
-         {
+        {
             title: "Kelola Categori",
             href: "/dashboard/categories",
             icon: ShoppingBag,
@@ -82,6 +82,15 @@ export default function DashboardPage() {
         {
             title: "Kelola Produk",
             href: "/dashboard/products",
+            icon: ShoppingBag,
+            roles: [
+                "SUPERADMIN",
+                "PRODUCT_ADMIN",
+            ],
+        },
+        {
+            title: "Inventory",
+            href: "/dashboard/inventory",
             icon: ShoppingBag,
             roles: [
                 "SUPERADMIN",
@@ -157,8 +166,8 @@ export default function DashboardPage() {
                     </p>
                     <h2
                         className={`text-sm font-bold ${isOnline
-                                ? "text-green-600"
-                                : "text-gray-500"
+                            ? "text-green-600"
+                            : "text-gray-500"
                             }`}
                     >
                         {isOnline ? "Online" : "Offline"}

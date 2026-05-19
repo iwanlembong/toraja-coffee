@@ -100,6 +100,7 @@ exports.getAnalytics = async (req, res) => {
                 return {
                     name: product?.name || "Unknown",
                     sold: item._sum.quantity,
+                    stock: product?.stock
                 };
             })
         );
@@ -145,6 +146,39 @@ exports.getAnalytics = async (req, res) => {
             })
         );
 
+        // ========================= // 
+        // 9. INVENTORY MOVEMENT     // 
+        // ========================= //
+
+        const inventoryLogs = await prisma.inventoryHistory.findMany(
+            {
+                where: dateFilter, select:
+                {
+                    quantity: true,
+                    type: true,
+                    createdAt: true,
+                },
+            });
+
+        const inventoryMovementMap = {};
+        inventoryLogs.forEach((log) => {
+            const date = log.createdAt.toLocaleDateString("id-ID");
+
+            if (!inventoryMovementMap[date]) {
+                inventoryMovementMap[date] = { date, IN: 0, OUT: 0, };
+            }
+
+            if (log.type === "IN") {
+                inventoryMovementMap[date].IN += log.quantity;
+            }
+
+            if (log.type === "OUT") {
+                inventoryMovementMap[date].OUT += log.quantity;
+            }
+        });
+
+        const inventoryMovement = Object.values(inventoryMovementMap);
+
         // =========================
         // RESPONSE
         // =========================
@@ -156,6 +190,7 @@ exports.getAnalytics = async (req, res) => {
             products,
             lowStock,
             salesTrend,
+            inventoryMovement,
         });
 
     } catch (err) {

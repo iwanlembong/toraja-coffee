@@ -21,15 +21,18 @@ exports.getCategories = async (req, res) => {
 
 // CREATE
 exports.createCategory = async (req, res) => {
-    try {
+  try {
+        const { name, slug } = req.body;
+
         const category =
             await prisma.category.create({
                 data: {
-                    name: req.body.name,
+                    name,
+                    slug,
                 },
             });
 
-        res.status(201).json(category);
+        res.json(category);
     } catch (err) {
         res.status(500).json({
             error: err.message,
@@ -39,15 +42,27 @@ exports.createCategory = async (req, res) => {
 
 // UPDATE
 exports.updateCategory = async (req, res) => {
-  const category =
-    await prisma.category.update({
-      where: {
-        id: Number(req.params.id),
-      },
-      data: req.body,
-    });
+  try {
+    const { id } = req.params;
+    const { name, slug } = req.body;
 
-  res.json(category);
+    const category =
+      await prisma.category.update({
+        where: {
+          id: Number(id),
+        },
+        data: {
+          name,
+          slug,
+        },
+      });
+
+    res.json(category);
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
 };
 
 // DELETE

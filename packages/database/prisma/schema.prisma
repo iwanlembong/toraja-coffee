@@ -32,7 +32,40 @@ model User {
 model Category {
   id       Int       @id @default(autoincrement())
   name     String
+  slug     String    @unique
   products Product[]
+}
+
+enum StockMovementType {
+  IN
+  OUT
+  ADJUSTMENT
+  SYSTEM
+}
+
+enum StockReason {
+  ORDER
+  CANCEL
+  RESTOCK
+  MANUAL
+  SYSTEM
+}
+
+model InventoryHistory {
+  id         Int               @id @default(autoincrement())
+
+  productId  Int?
+  orderId    Int?
+
+  product    Product? @relation(fields: [productId], references: [id])
+  order      Order?   @relation(fields: [orderId], references: [id])
+
+  type       StockMovementType
+  reason     StockReason?
+
+  quantity   Int
+  note       String?
+  createdAt  DateTime @default(now())
 }
 
 model Product {
@@ -48,6 +81,7 @@ model Product {
   createdAt   DateTime  @default(now())
 
   orderItems  OrderItem[]
+  inventoryHistory InventoryHistory[]
 }
 
 enum OrderStatus {
@@ -58,7 +92,6 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
-
 
 model Order {
   id        Int      @id @default(autoincrement())
@@ -73,6 +106,8 @@ model Order {
   createdAt DateTime    @default(now())
 
   items     OrderItem[]
+  inventoryHistory InventoryHistory[]
+  orderStatusHistory OrderStatusHistory[]
 }
 
 model OrderItem {
@@ -87,6 +122,16 @@ model OrderItem {
 
   order     Order    @relation(fields: [orderId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
+}
+
+model OrderStatusHistory {
+  id        Int @id @default(autoincrement())
+  orderId   Int
+  status    OrderStatus
+  note      String?
+  createdAt DateTime @default(now())
+
+  order     Order @relation(fields: [orderId], references: [id])
 }
 
 model Content {
